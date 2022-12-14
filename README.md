@@ -14,10 +14,15 @@ This is a vehicle parking reservation system that is designed for companies main
 2. Set envirement variables
 You need to update the `.env` file with your local database and other credentials.
 
-3. Spinup the development server
+3. Download php dependencies
+`composer install`
+4. Download js dependencies
+`npm install`
+
+6. Spinup the development server
 `php artisan serve`
 
-4. Watch assets changes & Refresh the browser accordingly
-`npm run watch'
+7. Watch assets changes & Refresh the browser accordingly
+`npm run watch`
 
-5. if you ran step 4 then goto `http://127.0.0.1:3000` else goto `http://127.0.0.1:8000`.
+8. if you ran step 4 then goto `http://127.0.0.1:3000` else goto `http://127.0.0.1:8000`.
