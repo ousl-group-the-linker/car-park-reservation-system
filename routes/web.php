@@ -53,6 +53,13 @@ Route::group(["middleware" => "auth"], function () {
     Route::get("s-admin/transactions-management", "SuperAdmin\TransactionsManagementController@index")->name("super-admin.transactions-management");
 
     Route::get("s-admin/admin-management", "SuperAdmin\AdminManagementController@index")->name("super-admin.admin-management");
+    Route::get("s-admin/admin-management/new", "SuperAdmin\AdminManagementController@showNew")->name("super-admin.admin-management.new");
+    Route::post("s-admin/admin-management/new", "SuperAdmin\AdminManagementController@saveNew");
+
+
+    Route::get("s-admin/admin-management/{admin}/edit", "SuperAdmin\AdminManagementController@showEdit")->name("super-admin.admin-management.edit");
+    Route::post("s-admin/admin-management/{admin}/edit", "SuperAdmin\AdminManagementController@saveEdit");
+    Route::get("s-admin/admin-management/{admin}", "SuperAdmin\AdminManagementController@showAdmin")->name("super-admin.admin-management.view");
 
     Route::get("account-management", "AccountManagementController@index")->name("account-management");
     Route::post("account-management", "AccountManagementController@updateProfile")->name("account-management.update");

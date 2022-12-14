@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('address_line_1');
             $table->string('address_line_2');
-            $table->string('address_line_3');
+            $table->string('address_line_3')->nullable();
             $table->unsignedBigInteger('address_city_id');
             $table->string('contact_number');
             $table->timestamp('email_verified_at')->nullable();

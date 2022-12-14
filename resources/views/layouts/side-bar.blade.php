@@ -28,7 +28,8 @@
                 <div class="logo-icon mt-4 d-flex justify-content-center">
                     <img src="{{ asset('images/logo-icon.png') }}" alt="Logo icon" width="35px">
                 </div>
-                <a href="{{ route('account-management') }}" class="text-decoration-none text-dark auth-profile d-flex flex-column align-items-start rounded">
+                <a href="{{ route('account-management') }}"
+                    class="text-decoration-none text-dark auth-profile d-flex flex-column align-items-start rounded">
                     <div class="mb-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor"
                             class="bi bi-person-circle text-main" viewBox="0 0 16 16">
@@ -60,15 +61,19 @@
 
         </div>
 
-        <div class="content d-flex flex-column flex-shrink-0 p-3 flex-grow-1 ic-scrollbar">
+        <div class="content d-flex flex-column py-3 flex-grow-1 ic-scrollbar">
             <div class="main-header">
-                @yield('main-header')
+                <div class="container">
+                    @yield('main-header')
+                </div>
             </div>
             <div class="main-body flex-grow-1">
                 @yield('main-body')
             </div>
-            <div class="main-footer">
-                <span>{{ config('app.copyright') }}</span>
+            <div class="main-footer ps-2">
+                <div class="container">
+                    <span>{{ config('app.copyright') }}</span>
+                </div>
             </div>
         </div>
     </main>
