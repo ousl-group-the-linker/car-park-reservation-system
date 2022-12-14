@@ -1,0 +1,196 @@
+@import "../../scss/colors.scss";
+
+body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+}
+
+html {
+    height: -webkit-fill-available;
+}
+
+main {
+    display: flex;
+    flex-wrap: nowrap;
+    height: -webkit-fill-available;
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    .side-bar {
+        --sidebar-max-width: 280px;
+        --sidebar-width: var(--sidebar-max-width);
+        transition: width 0.25s ease-out;
+
+        width: var(--sidebar-width);
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        .sidebar-header {
+            padding: 20px;
+        }
+
+        .auth-profile {
+            margin-top: 20px;
+            padding: 20px;
+            transition: background-color 0.25s ease-out;
+            cursor: pointer;
+
+            &:hover {
+                background-color: $hover-light-color !important;
+            }
+        }
+
+        .bi {
+            vertical-align: -.125em;
+            pointer-events: none;
+            fill: currentColor;
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 10px;
+            margin-bottom: 4px;
+            position: relative;
+
+            span {
+                margin-left: 10px;
+            }
+
+            &:hover {
+                background-color: $hover-light-color !important;
+            }
+
+            &.active {
+                background-color: transparent;
+                color: $body-color !important;
+
+                &::after {
+                    content: " ";
+                    width: 10px;
+                    height: 10px;
+                    position: absolute;
+                    right: 10px;
+                    top: 50%;
+                    background-color: $main-color;
+                    border-radius: 50%;
+                    transform: translateY(-50%);
+                }
+            }
+        }
+
+
+        .scrollarea {
+            overflow-y: auto;
+        }
+
+        .fw-semibold {
+            font-weight: 600;
+        }
+
+        .lh-tight {
+            line-height: 1.25;
+        }
+
+
+
+        @media (max-width:520px) {
+            --sidebar-width: var(--sidebar-max-width);
+        }
+
+
+    }
+
+    .content {
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        .main-header {
+            // min-height: 40px;
+
+
+            .breadcrumb {
+                margin-left: 0;
+                margin-bottom: 0 !important;
+            }
+        }
+
+        .main-footer {
+            margin-top: 20px;
+        }
+    }
+
+
+    &:not(.expanded) {
+        .side-bar {
+            --sidebar-width: 3.5rem;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            .sidebar-header {
+                padding: 0 !important;
+
+                .logo {
+                    display: none;
+                }
+            }
+
+            .sidebar-body {
+                margin-top: 50px !important;
+            }
+
+            .auth-profile {
+                display: none !important;
+            }
+
+            .nav-pills .nav-link {
+
+                span {
+                    display: none;
+                }
+
+                &.active {
+                    background-color: $main-color !important;
+                    color: white !important;
+
+                    &::after {
+                        content: none;
+                        display: none;
+                    }
+                }
+            }
+        }
+
+        .content {
+            .main-header {
+                margin-bottom: 20px;
+            }
+        }
+    }
+
+    &.expanded {
+        .side-bar {
+            .nav-pills .nav-link {
+                width: calc(var(--sidebar-max-width) - 20px);
+            }
+
+            .logo-icon {
+                display: none !important;
+            }
+        }
+
+        .content {
+            .main-header {
+                min-height: 80px;
+
+                .breadcrumb {
+                    margin-left: 39px;
+                }
+            }
+        }
+    }
+}

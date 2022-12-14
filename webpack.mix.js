@@ -11,7 +11,11 @@ const mix = require('laravel-mix');
  |
  */
 
+mix.disableNotifications();
+mix.browserSync("127.0.0.1:8000");
+
 mix.js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/app.css', 'public/css', [
-        //
-    ]);
+    .sass('resources/scss/app.scss', 'public/styles')
+
+mix.sass('resources/components/sidebar/sidebar.scss', 'public/components/sidebar')
+    .js('resources/components/sidebar/sidebar.js', 'public/components/sidebar')

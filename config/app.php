@@ -13,7 +13,8 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => "Your Car Park",
+    'copyright' => '© ' . date('Y') . ' The Linkers - All rights reserved',
 
     /*
     |--------------------------------------------------------------------------
