@@ -11,7 +11,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item" aria-current="page">
-                    <a href="{{ route('super-admin.admin-management') }}" class="text-dark">Admins</a>
+                    <a href="{{ route('super-admin.admin-management') }}" class="text-dark text-decoration-none">Admins</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">Admin ID#{{ $admin->id }}</li>
             </ol>

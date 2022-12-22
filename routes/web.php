@@ -47,6 +47,14 @@ Route::group(["middleware" => "auth"], function () {
     Route::get("s-admin/dashboard", "SuperAdmin\DashboardController@index")->name("super-admin.dashboard");
 
     Route::get("s-admin/branches-management", "SuperAdmin\BranchManegementController@index")->name("super-admin.branches-management");
+    Route::get("s-admin/branches-management/new", "SuperAdmin\BranchManegementController@showNew")->name("super-admin.branches-management.new");
+    Route::post("s-admin/branches-management/new", "SuperAdmin\BranchManegementController@saveNew");
+    Route::get("s-admin/branches-management/search-managers", "SuperAdmin\BranchManegementController@searchManagers")->name("super-admin.branches-management.search-managers");
+
+    Route::get("s-admin/branches-management/{branch}/edit", "SuperAdmin\BranchManegementController@showEdit")->name("super-admin.branches-management.edit");
+    Route::post("s-admin/branches-management/{branch}/edit", "SuperAdmin\BranchManegementController@saveEdit");
+    Route::get("s-admin/branches-management/{branch}", "SuperAdmin\BranchManegementController@showAdmin")->name("super-admin.branches-management.view");
+
 
     Route::get("s-admin/bookings-management", "SuperAdmin\BookingsManagementController@index")->name("super-admin.bookings-management");
 
@@ -55,7 +63,7 @@ Route::group(["middleware" => "auth"], function () {
     Route::get("s-admin/admin-management", "SuperAdmin\AdminManagementController@index")->name("super-admin.admin-management");
     Route::get("s-admin/admin-management/new", "SuperAdmin\AdminManagementController@showNew")->name("super-admin.admin-management.new");
     Route::post("s-admin/admin-management/new", "SuperAdmin\AdminManagementController@saveNew");
-
+    Route::get("s-admin/admin-management/search-branches", "SuperAdmin\AdminManagementController@searchBranches")->name("super-admin.admin-management.search-brancges");
 
     Route::get("s-admin/admin-management/{admin}/edit", "SuperAdmin\AdminManagementController@showEdit")->name("super-admin.admin-management.edit");
     Route::post("s-admin/admin-management/{admin}/edit", "SuperAdmin\AdminManagementController@saveEdit");

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\SriLankaDistrict;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -71,7 +73,21 @@ class AdminManagementController extends Controller
             "address_line_3" => "nullable|string",
             "address_city" => "required|exists:sri_lanka_cities,id",
             "contact_number" => "required|numeric|digits:10",
-            "role" => ["required", "numeric", Rule::in([User::$ROLE_SUPER_ADMIN, User::$ROLE_MANAGER, User::$ROLE_COUNTER])]
+            "role" => ["required", "numeric", Rule::in([User::$ROLE_SUPER_ADMIN, User::$ROLE_MANAGER, User::$ROLE_COUNTER])],
+            "branch_id" => [
+                "nullable",
+                Rule::when(function () use ($request) {
+                    return ($request->input("role") == User::$ROLE_MANAGER
+                        || $request->input("role") == User::$ROLE_COUNTER)
+                        && ($request->input("branch_id") != null);
+                }, [
+                    Rule::exists('branches', "id")->whereNull("manager_id")
+                ]),
+
+            ]
+        ], [
+            "branch_id.exists" => "The selected branch is not a valid branch or it has already associated with another manager.",
+            "branch_id.*" => "The branch field is invalid.",
         ]);
 
         $admin = new User();
@@ -87,6 +103,14 @@ class AdminManagementController extends Controller
         $admin->password = Hash::make($data->password);
         $admin->save();
 
+        if (
+            $data->role == User::$ROLE_MANAGER
+            || $data->role == User::$ROLE_COUNTER
+        ) {
+            if (isset($data->branch_id)) {
+                Branch::findorfail($data->branch_id)->Manager()->associate($admin)->save();
+            }
+        }
 
         return redirect()->route('super-admin.admin-management.new')
             ->with(["profile-create-success-message" => "New admin account is successfully created."]);
@@ -126,7 +150,25 @@ class AdminManagementController extends Controller
             "address_city" => "required|exists:sri_lanka_cities,id",
             "contact_number" => "required|numeric|digits:10",
             "role" => ["required", "numeric", Rule::in([User::$ROLE_SUPER_ADMIN, User::$ROLE_MANAGER, User::$ROLE_COUNTER])],
-            "is_activated" => "required|numeric|in:1,0"
+            "is_activated" => "required|numeric|in:1,0",
+            "branch_id" => [
+                "nullable",
+                Rule::when(function () use ($request) {
+                    return $request->input("role") == User::$ROLE_MANAGER
+                        || $request->input("role") == User::$ROLE_COUNTER;
+                }, [
+                    Rule::exists('branches', "id")->where(function ($query) use ($request, $admin) {
+
+                        if (($admin->Branch->id ?? null) != $request->input("branch_id")) {
+                            $query->whereNull('manager_id');
+                        }
+                    }),
+                ]),
+
+            ]
+        ], [
+            "branch_id.exists" => "The selected branch is not a valid branch or it has already associated with another manager.",
+            "branch_id.*" => "The branch field is invalid.",
         ]);
 
 
@@ -141,9 +183,49 @@ class AdminManagementController extends Controller
         $admin->is_activated = $data->is_activated;
         $admin->save();
 
+        if (isset($admin->Branch)) {
+            Branch::findorfail($admin->Branch->id)->Manager()->disassociate($admin)->save();
+        }
+
+        if (
+            $data->role == User::$ROLE_MANAGER
+            || $data->role == User::$ROLE_COUNTER
+        ) {
+            if (isset($data->branch_id)) {
+                Branch::findorfail($data->branch_id)->Manager()->associate($admin)->save();
+            }
+        }
 
         return redirect()->route('super-admin.admin-management.edit', ['admin' => $admin->id])
             ->with(["profile-update-success-message" => "Admin account information is successfully updated."]);
+    }
+
+    /**
+     * Search managers (json)
+     */
+    public function searchBranches(Request $request)
+    {
+        if (strlen($request->input("name")) < 1 && strlen($request->input("email")) < 1) {
+            return response()->json(new Collection());
+        }
+
+
+        $branches = Branch::query();
+
+        if (strlen($request->input("name")) > 0) {
+            $branches->where("name", "like", "%" . $request->input("name") . "%");
+        }
+
+        if (strlen($request->input("email")) > 0) {
+            $branches->where("email", $request->input("email"));
+        }
+
+
+        $branches = $branches->limit(10)->get();
+        $branches->load(["City", "Manager"]);
+
+
+        return response()->json($branches);
     }
 
 

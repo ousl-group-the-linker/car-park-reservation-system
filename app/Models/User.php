@@ -86,4 +86,9 @@ class User extends Authenticatable
     {
         return $this->role == self::$ROLE_USER;
     }
+
+    public function Branch()
+    {
+        return $this->hasOne(Branch::class, "manager_id");
+    }
 }

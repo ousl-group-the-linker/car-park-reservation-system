@@ -9,7 +9,9 @@
         </li>
         <li>
             <a href="{{ route('super-admin.branches-management') }}"
-                class="nav-link text-dark d-flex align-items-center @if (request()->routeIs('super-admin.branches-management')) active @endif">
+                class="nav-link text-dark d-flex align-items-center @if (request()->routeIs('super-admin.branches-management') ||
+                    request()->routeIs('super-admin.branches-management.edit') ||
+                    request()->routeIs('super-admin.branches-management.new')) active @endif">
                 <i class="bi bi-p-circle"></i>
                 <span>Parkings</span>
             </a>
@@ -34,8 +36,7 @@
                 @if (request()->routeIs('super-admin.admin-management') ||
                     request()->routeIs('super-admin.admin-management.view') ||
                     request()->routeIs('super-admin.admin-management.edit') ||
-                    request()->routeIs('super-admin.admin-management.new'))
-                    active @endif">
+                    request()->routeIs('super-admin.admin-management.new')) active @endif">
                 <i class="bi bi-people"></i>
                 <span>Admins</span>
             </a>

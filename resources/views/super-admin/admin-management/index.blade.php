@@ -76,17 +76,17 @@
                             class="text-truncate col-12 col-sm-6 col-xl-4 mb-2 mb-xl-0 p-0 d-flex flex-column align-items-start">
                             <span class="fs-6 fw-light">Email</span>
                             <a href="mailto:{{ $admin_account->email }}"
-                                class="m-0 text-dark text-dark w-100 text-truncate">{{ $admin_account->email }}</a>
+                                class="m-0 text-dark text-dark w-100 text-truncate text-decoration-none">{{ $admin_account->email }}</a>
                         </div>
                         <div class="col-12 col-sm-6 col-xl-3 mb-2 mb-xl-0 p-0 d-flex flex-column align-items-start">
                             <span class="fs-6 fw-light">Name</span>
-                            <p class="text-truncate m-0">{{ $admin_account->first_name . ' ' . $admin_account->last_name }}
+                            <p class="text-wrap m-0">{{ $admin_account->first_name . ' ' . $admin_account->last_name }}
                             </p>
                         </div>
 
                         <div class="col-12 col-sm-6 col-xl-3 mb-2 mb-xl-0 p-0 d-flex flex-column align-items-start">
                             <span class="fs-6 fw-light">Branch</span>
-                            <p class="text-truncate m-0">N/A</p>
+                            <p class="text-wrap m-0">{{ $admin_account->Branch->name ?? 'No Branch' }}</p>
                         </div>
                         <hr class="col-12 d-flex my-2">
                         <div class="col-12 col-sm-6 col-xl-4 mb-2 mb-xl-0 p-0 pb-0 d-flex flex-column align-items-start">

@@ -1,5 +1,6 @@
 @extends('layouts.side-bar')
 @include('menues.sidebar-body-super-admin')
+@include('super-admin.admin-management.branch-select')
 
 @section('sidebar-body')
     @yield('sidebar-body-super-admin')
@@ -11,7 +12,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item" aria-current="page">
-                    <a href="{{ route('super-admin.admin-management') }}" class="text-dark">Admins</a>
+                    <a href="{{ route('super-admin.admin-management') }}" class="text-dark text-decoration-none">Admins</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">New</li>
             </ol>
@@ -169,6 +170,7 @@
                         @endif
 
                     </div>
+                    @yield('branch-select-input')
 
 
                 </div>
@@ -185,6 +187,8 @@
             </form>
         </div>
     </div>
+
+    @yield('branch-select')
 @endsection
 
 @push('foot')

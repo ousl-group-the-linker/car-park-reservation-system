@@ -1,5 +1,6 @@
 @extends('layouts.side-bar')
 @include('menues.sidebar-body-super-admin')
+@include('super-admin.admin-management.branch-select')
 
 @section('sidebar-body')
     @yield('sidebar-body-super-admin')
@@ -11,13 +12,15 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item" aria-current="page">
-                    <a href="{{ route('super-admin.admin-management') }}" class="text-dark">Admins</a>
+                    <a href="{{ route('super-admin.admin-management') }}" class="text-dark text-decoration-none">Admins</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">Admin ID#{{ $admin->id }}</li>
                 <li class="breadcrumb-item active" aria-current="page">Edit</li>
             </ol>
         </nav>
     </div>
+
+
 @endsection
 
 @section('main-body')
@@ -143,6 +146,9 @@
                         @endif
 
                     </div>
+
+                    @yield('branch-select-input')
+
                     <div class="mb-3">
                         <label for="is_activated" class="form-label">Status</label>
 
@@ -150,8 +156,8 @@
                             aria-label="City" name="is_activated" required>
                             <option selected disabled>Choose one</option>
 
-                            <option value="1" @if ((int)old('is_activated', $admin->is_activated) === 1) selected @endif>Activated</option>
-                            <option value="0" @if ((int)old('is_activated', $admin->is_activated) === 0) selected @endif>Deactivated</option>
+                            <option value="1" @if ((int) old('is_activated', $admin->is_activated) === 1) selected @endif>Activated</option>
+                            <option value="0" @if ((int) old('is_activated', $admin->is_activated) === 0) selected @endif>Deactivated</option>
 
                         </select>
                         @if ($errors->has('is_activated'))
@@ -176,4 +182,9 @@
             </form>
         </div>
     </div>
+
+    @yield('branch-select')z
 @endsection
+
+
+

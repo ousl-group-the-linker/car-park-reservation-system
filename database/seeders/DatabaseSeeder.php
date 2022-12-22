@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -18,5 +19,7 @@ class DatabaseSeeder extends Seeder
         User::factory(10)->role(User::$ROLE_MANAGER)->create();
         User::factory(10)->role(User::$ROLE_COUNTER)->create();
         User::factory(100)->role(User::$ROLE_USER)->create();
+
+        Branch::factory(10)->create();
     }
 }
