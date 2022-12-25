@@ -34,22 +34,22 @@ class UserFactory extends Factory
             'address_city_id' => SriLankaCity::all()->random()->id,
             'contact_number' => "0" . $this->faker->randomNumber(2) . $this->faker->randomNumber(7),
             'password' => Hash::make("1234567890"),
-
+            // 'work_for_branch_id' =>
             'is_activated' => true
         ];
     }
 
     /**
- * Indicate that the user is suspended.
- *
- * @return \Illuminate\Database\Eloquent\Factories\Factory
- */
-public function role($role)
-{
-    return $this->state(function (array $attributes) use($role) {
-        return [
-            'role' => $role,
-        ];
-    });
-}
+     * Indicate that the user is suspended.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function role($role)
+    {
+        return $this->state(function (array $attributes) use ($role) {
+            return [
+                'role' => $role,
+            ];
+        });
+    }
 }

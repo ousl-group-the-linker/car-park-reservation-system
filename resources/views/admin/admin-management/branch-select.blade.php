@@ -94,8 +94,7 @@
                             </div>
                             <div class="col-12 col-md-2 pe-3 pt-3 pt-md-0 d-flex justify-content-md-end">
                                 <button branch-id="${branch.id}" name="${branch.name}"
-                                    email="${branch.email}" city="${branch.city.name}" type="button" class="select-btn btn btn-info" data-bs-dismiss="modal"
-                                    ${branch.manager == null ? "" : "disabled"}>
+                                    email="${branch.email}" city="${branch.city.name}" type="button" class="select-btn btn btn-info" data-bs-dismiss="modal">
                                     <i class="bi bi-check2-circle me-2"></i>Select</button>
                             </div>
                         </div>`;
@@ -128,39 +127,54 @@
 
 
             @php
-                $hasOldManager = old('branch_id') !== null && old('branch_name') !== null && old('branch_email') !== null && old('branch_city') !== null;
+                if ($admin->isManagerAccount()) {
+                    $branch_id = old('branch_id', $admin->ManageBranch->id ?? null);
+                    $branch_name = old('branch_name', $admin->ManageBranch->name ?? null);
+                    $branch_email = old('branch_email', $admin->ManageBranch->email ?? null);
+                    $branch_city = old('branch_city', $admin->ManageBranch->City->name ?? null);
+                } elseif ($admin->isCounterAccount()) {
+                    $branch_id = old('branch_id', $admin->WorkForBranch->id ?? null);
+                    $branch_name = old('branch_name', $admin->WorkForBranch->name ?? null);
+                    $branch_email = old('branch_email', $admin->WorkForBranch->email ?? null);
+                    $branch_city = old('branch_city', $admin->WorkForBranch->City->name ?? null);
+                }
+
+                $hasOldManager = $branch_id !== null && $branch_name !== null && $branch_email !== null && $branch_city !== null;
             @endphp
 
             <input type="text" name="branch_id"
-                @if ($hasOldManager) value="{{ old('branch_id') }}" @endif
+                @if ($hasOldManager) value="{{ $branch_id }}" @else {{ $admin->Branch->id ?? null }} @endif
                 style="position: absolute;left:0;top:0;right:0;bottom:0;z-index:-1000">
-            <input type="hidden" name="branch_name"
-                @if ($hasOldManager) value="{{ old('branch_name') }}" @endif>
-            <input type="hidden" name="branch_email"
-                @if ($hasOldManager) value="{{ old('branch_email') }}" @endif>
-            <input type="hidden" name="branch_city"
-                @if ($hasOldManager) value="{{ old('branch_city') }}" @endif>
+            <input type="hidden" name="branch_name" @if ($hasOldManager) value="{{ $branch_name }}" @endif>
+            <input type="hidden" name="branch_email" @if ($hasOldManager) value="{{ $branch_email }}" @endif>
+            <input type="hidden" name="branch_city" @if ($hasOldManager) value="{{ $branch_city }}" @endif>
 
             <div class="selected d-flex @if (!$hasOldManager) d-none @endif align-items-center px-3 py-2">
                 <div class="flex-grow-1 me-3">
-                    <p class="m-0 name">{{ old('branch_name') }}</p>
-                    <p class="m-0"><small class="email">{{ old('branch_email') }}</small> <i class="bi bi-dot mx-1"></i> <small class="branch_city">{{ old('branch_city') }}</small></p>
+                    <p class="m-0 name">{{ $branch_name }}</p>
+                    <p class="m-0"><small class="email">{{ $branch_email }}</small> <i class="bi bi-dot mx-1"></i>
+                        <small class="branch_city">{{ $branch_city }}</small>
+                    </p>
                 </div>
-                <div class="flex-grow-0">
-                    <button type="button" class="remove-selected btn btn-danger"><i
-                            class="bi bi-x-square-fill"></i></button>
-                </div>
+                @if (Auth::user()->isSuperAdminAccount())
+                    <div class="flex-grow-0">
+                        <button type="button" class="remove-selected btn btn-danger"><i
+                                class="bi bi-x-square-fill"></i></button>
+                    </div>
+                @endif
             </div>
             <div class="not-selected d-flex @if ($hasOldManager) d-none @endif align-items-center  px-3 py-2">
                 <div class="flex-grow-1 me-3">
                     <p class="m-0">Not selected</p>
                 </div>
-                <div class="flex-grow-0">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#choose-manager-model">
-                        <i class="bi bi-plus-square-fill"></i>
-                    </button>
-                </div>
+                @if (Auth::user()->isSuperAdminAccount())
+                    <div class="flex-grow-0">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#choose-manager-model">
+                            <i class="bi bi-plus-square-fill"></i>
+                        </button>
+                    </div>
+                @endif
             </div>
 
         </div>
@@ -175,8 +189,6 @@
 
     @push('foot')
         <script>
-
-
             $("#branches-container").on("click", ".select-btn", function() {
                 let branchId = $(this).attr("branch-id");
                 let name = $(this).attr("name");

@@ -24,6 +24,7 @@ class Branch extends Model
         "address_city_id",
         "parking_slots",
         "manager_id",
+        "hourly_rate"
     ];
 
     /**
@@ -45,8 +46,13 @@ class Branch extends Model
         return $this->belongsTo(SriLankaCity::class, "address_city_id");
     }
 
-    public function Manager(){
+    public function Manager()
+    {
         return $this->belongsTo(User::class, "manager_id");
+    }
+    public function Employees()
+    {
+        return $this->hasMany(User::class, "work_for_branch_id");
     }
 
     public function getAddressTextAttribute()
@@ -60,5 +66,14 @@ class Branch extends Model
 
         $chunks = array_filter($chunks);
         return join(", ", $chunks);
+    }
+
+    public function reservedSlots()
+    {
+        return 2;
+    }
+    public function reservedPersentage()
+    {
+        return (2 / $this->parking_slots) * 100;
     }
 }

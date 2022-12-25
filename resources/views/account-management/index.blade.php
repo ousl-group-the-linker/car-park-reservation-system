@@ -1,8 +1,16 @@
 @extends('layouts.side-bar')
-@include('menues.sidebar-body-super-admin')
 
 @section('sidebar-body')
-    @yield('sidebar-body-super-admin')
+    @if (Auth::user()->isSuperAdminAccount())
+        @include('menues.sidebar-body-super-admin')
+        @yield('sidebar-body-super-admin')
+    @elseif(Auth::user()->isManagerAccount())
+        @include('menues.sidebar-body-admin')
+        @yield('sidebar-body-admin')
+    @elseif(Auth::user()->isCounterAccount())
+        @include('menues.sidebar-body-user')
+        @yield('sidebar-body-user')
+    @endif
 @endsection
 
 @section('main-header')
@@ -70,7 +78,8 @@
                             </div>
                         @endif
 
-                        <input type="text" class="form-control mt-2  @if ($errors->profileUpdate->has('address_line_2')) is-invalid @endif"
+                        <input type="text"
+                            class="form-control mt-2  @if ($errors->profileUpdate->has('address_line_2')) is-invalid @endif"
                             id="address_line_2" name="address_line_2" placeholder="Address line 2"
                             value="{{ old('address_line_2', Auth::user()->address_line_2) }}">
                         @if ($errors->profileUpdate->has('address_line_2'))
@@ -79,7 +88,8 @@
                             </div>
                         @endif
 
-                        <input type="text" class="form-control mt-2  @if ($errors->profileUpdate->has('address_line_3')) is-invalid @endif"
+                        <input type="text"
+                            class="form-control mt-2  @if ($errors->profileUpdate->has('address_line_3')) is-invalid @endif"
                             id="address_line_3" name="address_line_3" placeholder="Address line 3"
                             value="{{ old('address_line_3', Auth::user()->address_line_3) }}">
                         @if ($errors->profileUpdate->has('address_line_3'))
@@ -124,7 +134,8 @@
 
                 </div>
                 <div class="card-footer d-flex justify-content-end">
-                    <a href="{{ route('account-management') }}" class="btn btn-light me-2"><i class="bi bi-arrow-clockwise me-1"></i>Reset</a>
+                    <a href="{{ route('account-management') }}" class="btn btn-light me-2"><i
+                            class="bi bi-arrow-clockwise me-1"></i>Reset</a>
                     <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Save</button>
                 </div>
             </form>
@@ -183,7 +194,8 @@
 
                 </div>
                 <div class="card-footer d-flex justify-content-end">
-                    <a href="{{ route('account-management') }}" class="btn btn-light me-2"><i class="bi bi-arrow-clockwise me-1"></i>Reset</a>
+                    <a href="{{ route('account-management') }}" class="btn btn-light me-2"><i
+                            class="bi bi-arrow-clockwise me-1"></i>Reset</a>
                     <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Save</button>
                 </div>
             </form>

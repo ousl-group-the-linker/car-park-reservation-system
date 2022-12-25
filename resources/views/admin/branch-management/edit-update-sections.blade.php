@@ -112,6 +112,18 @@
         </div>
 
         <div class="mb-3">
+            <label for="hourly_rate" class="form-label">Hourly Rate (Rs)</label>
+            <input type="number" min="1" class="form-control @if ($errors->has('hourly_rate')) is-invalid @endif"
+                id="hourly_rate" name="hourly_rate" placeholder="0"
+                value="{{ old('hourly_rate', $branch->hourly_rate ?? null) }}" required>
+            @if ($errors->has('hourly_rate'))
+                <div class="invalid-feedback">
+                    {{ $errors->first('hourly_rate') }}
+                </div>
+            @endif
+        </div>
+
+        <div class="mb-3">
             <label for="role" class="form-label">Branch Manager</label>
 
             <div id="branch-manager-input"
@@ -168,16 +180,16 @@
 
     </div>
     <div class="card-footer d-flex justify-content-between">
-        <a href="{{ route('super-admin.branches-management') }}" class="btn btn-light me-2"><i
+        <a href="{{ route('branches-management') }}" class="btn btn-light me-2"><i
                 class="bi bi-arrow-left-circle me-1"></i>Back</a>
 
         <div class="d-flex flex-row">
             @if (isset($branch))
-            <a href="{{ route('super-admin.branches-management.edit', ['branch' => $branch->id]) }}" class="btn btn-light me-2"><i
+            <a href="{{ route('branches-management.edit', ['branch' => $branch->id]) }}" class="btn btn-light me-2"><i
                     class="bi bi-arrow-clockwise me-1"></i>Reset</a>
                     <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Update</button>
                     @else
-                    <a href="{{ route('super-admin.branches-management.new') }}" class="btn btn-light me-2"><i
+                    <a href="{{ route('branches-management.new') }}" class="btn btn-light me-2"><i
                             class="bi bi-arrow-clockwise me-1"></i>Reset</a>
                 <button class="btn btn-primary"><i class="bi bi-plus-square me-1"></i></i>Create</button>
             @endif
@@ -260,7 +272,7 @@
             }
 
             $.get(
-                "{{ route('super-admin.branches-management.search-managers') }}", {
+                "{{ route('branches-management.search-managers') }}", {
                     name: $("#search-managers-frm").find("[name=name]").val(),
                     email: $("#search-managers-frm").find("[name=email]").val()
                 },

@@ -1,22 +1,37 @@
 @extends('layouts.side-bar')
-@include('menues.sidebar-body-super-admin')
-@include('super-admin.admin-management.branch-select')
-
 @section('sidebar-body')
-    @yield('sidebar-body-super-admin')
+    @if (Auth::user()->isSuperAdminAccount())
+        @include('menues.sidebar-body-super-admin')
+        @yield('sidebar-body-super-admin')
+    @elseif(Auth::user()->isManagerAccount())
+        @include('menues.sidebar-body-admin')
+        @yield('sidebar-body-admin')
+    @elseif(Auth::user()->isCounterAccount())
+        @include('menues.sidebar-body-user')
+        @yield('sidebar-body-user')
+    @endif
 @endsection
 
 @section('main-header')
     <div class="header d-flex flex-column justify-content-center">
-        <h1 class="fs-4 m-0"><i class="bi bi-people me-2 text-main"></i>&nbsp;Admin Management</h1>
+        <h1 class="fs-4 m-0"><i class="bi bi-p-circle me-2 text-main"></i>&nbsp;Branch #{{ $branch->id }} |
+            {{ $branch->name }}</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item" aria-current="page">
-                    <a href="{{ route('super-admin.admin-management') }}" class="text-dark text-decoration-none">Admins</a>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <a href="{{ route('branches-management') }}" class="text-decoration-none text-dark">Parkings</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">New</li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <a href="{{ route('branches-management.view', ['branch' => $branch->id]) }}"
+                        class="text-decoration-none text-dark">Branch
+                        #{{ $branch->id }}</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Admin Management</li>
             </ol>
         </nav>
+    </div>
+    <div class="d-flex align-items-center justify-content-end flex-grow-1">
+
     </div>
 @endsection
 
@@ -26,7 +41,8 @@
             <div class="card-header">
                 <h2 class="fs-5 m-0">New Admin</h2>
             </div>
-            <form action="{{ route('super-admin.admin-management.new') }}" method="post">
+            <form action="{{ route('branches-management.admin-management.new', ['branch' => $branch->id]) }}"
+                method="post">
                 @csrf
 
                 @if (session()->has('profile-create-success-message'))
@@ -79,7 +95,8 @@
                             </div>
                         @endif
 
-                        <input type="text" class="form-control mt-2  @if ($errors->has('address_line_2')) is-invalid @endif"
+                        <input type="text"
+                            class="form-control mt-2  @if ($errors->has('address_line_2')) is-invalid @endif"
                             id="address_line_2" name="address_line_2" placeholder="Address line 2"
                             value="{{ old('address_line_2') }}" required>
                         @if ($errors->has('address_line_2'))
@@ -175,35 +192,16 @@
 
                 </div>
                 <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ route('super-admin.admin-management') }}" class="btn btn-light me-2"><i
-                            class="bi bi-arrow-left-circle me-1"></i>Back</a>
+                    <a href="{{ route('branches-management.admin-management', ['branch' => $branch->id]) }}"
+                        class="btn btn-light me-2"><i class="bi bi-arrow-left-circle me-1"></i>Back</a>
 
                     <div class="d-flex flex-row">
-                        <a href="{{ route('super-admin.admin-management.new') }}" class="btn btn-light me-2"><i
-                                class="bi bi-arrow-clockwise me-1"></i>Reset</a>
+                        <a href="{{ route('branches-management.admin-management.new', ['branch' => $branch->id]) }}"
+                            class="btn btn-light me-2"><i class="bi bi-arrow-clockwise me-1"></i>Reset</a>
                         <button class="btn btn-primary"><i class="bi bi-plus-square me-1"></i></i>Create</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-
-    @yield('branch-select')
 @endsection
-
-@push('foot')
-    <script>
-        $(document).on("click", "#password-visibility-toggler", function() {
-            let input = $("#password");
-            let icon = $("#password-visibility-toggler").find("i");
-
-            if (input.attr("type") == "password") {
-                input.attr("type", "text");
-                icon.attr("class", "bi bi-eye-slash me-1");
-            } else {
-                input.attr("type", "password");
-                icon.attr("class", "bi bi-eye me-1");
-            }
-        });
-    </script>
-@endpush

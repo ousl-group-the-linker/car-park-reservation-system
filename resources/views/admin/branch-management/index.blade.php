@@ -1,8 +1,16 @@
 @extends('layouts.side-bar')
-@include('menues.sidebar-body-super-admin')
 
 @section('sidebar-body')
-    @yield('sidebar-body-super-admin')
+    @if (Auth::user()->isSuperAdminAccount())
+        @include('menues.sidebar-body-super-admin')
+        @yield('sidebar-body-super-admin')
+    @elseif(Auth::user()->isManagerAccount())
+        @include('menues.sidebar-body-admin')
+        @yield('sidebar-body-admin')
+    @elseif(Auth::user()->isCounterAccount())
+        @include('menues.sidebar-body-user')
+        @yield('sidebar-body-user')
+    @endif
 @endsection
 
 @section('main-header')
@@ -23,7 +31,7 @@
     <div class="container">
         <div class="row mb-4 p-0 m-0">
             <div class="col-12 d-flex p-0 m-0" style="max-width: 780px">
-                <a href="{{ route('super-admin.branches-management.new') }}" class="btn btn-primary">
+                <a href="{{ route('branches-management.new') }}" class="btn btn-primary">
                     <i class="bi bi-plus-square me-1"></i>New Branch</a>
             </div>
         </div>
@@ -32,7 +40,7 @@
                 <div class="card-header">
                     <h2 class="fs-5 m-0">Search Branch</h2>
                 </div>
-                <form action="{{ route('super-admin.branches-management') }}" method="get">
+                <form action="{{ route('branches-management') }}" method="get">
 
                     @if (session()->has('profile-update-success-message'))
                         <div class="alert alert-info alert-dismissible fade show mx-2 mt-2" role="alert">
@@ -80,7 +88,7 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end">
-                        <a href="{{ route('super-admin.branches-management') }}" class="btn btn-light me-2"><i
+                        <a href="{{ route('branches-management') }}" class="btn btn-light me-2"><i
                                 class="bi bi-arrow-clockwise me-1"></i>Reset</a>
                         <button class="btn btn-primary"><i class="bi bi-funnel-fill me-1"></i></i>Filter</button>
                     </div>
@@ -129,12 +137,12 @@
                             class="ps-0 col-12 col-xl-4 pt-4 pt-xl-0 pe-0 d-flex flex-row justify-content-end align-items-center">
 
                             @can('view', $branch)
-                                <a href="{{ route('super-admin.branches-management.view', ['branch' => $branch->id]) }}"
+                                <a href="{{ route('branches-management.view', ['branch' => $branch->id]) }}"
                                     class="btn btn-light me-2"><i class="bi bi-box-arrow-up-right me-1"></i>View</a>
                             @endcanany
 
                             @can('update', $branch)
-                                <a href="{{ route('super-admin.branches-management.edit', ['branch' => $branch->id]) }}"
+                                <a href="{{ route('branches-management.edit', ['branch' => $branch->id]) }}"
                                     class="btn btn-light"><i class="bi bi-pencil-fill me-1"></i>Edit</a>
                             @endcanany
                         </div>

@@ -18,8 +18,7 @@ class UserPolicy
     public function viewAny(User $user)
     {
         return $user->isSuperAdminAccount()
-            || $user->isManagerAccount()
-            || $user->isCounterAccount();
+            || $user->isManagerAccount();
     }
 
     /**
@@ -31,9 +30,29 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
-        return $user->isSuperAdminAccount()
-            || $user->isManagerAccount()
-            || $user->isCounterAccount();
+        if ($user->id == $model->id) {
+            return true;
+        }
+
+        if ($user->isSuperAdminAccount()) {
+            return true;
+        }
+
+        // check whether the user is an employee of the current manager's branch
+        if ($user->isManagerAccount()) {
+            return isset($user->ManageBranch->id)
+                && isset($model->WorkForBranch->id)
+                && (($model->WorkForBranch->id ?? null)  == ($user->ManageBranch->id ?? null));
+        }
+
+        // check whether the model is either a manager or a counter workin under the same branch.
+        if ($user->isCounterAccount()) {
+            return (isset($user->WorkForBranch->id) && isset($model->WorkForBranch->id) && ($user->WorkForBranch->id == $model->WorkForBranch->id))
+
+                || (isset($user->WorkForBranch->id) && isset($model->WorkForBranch->id) && ($user->WorkForBranch->id == $model->ManageBranch->id));
+        }
+
+        return false;
     }
 
     /**
@@ -57,7 +76,18 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        return $user->isSuperAdminAccount() || $model->id == $user->id;
+        if ($user->isSuperAdminAccount() || $model->id == $user->id) {
+            return true;
+        }
+
+        // check whether the user is an employee of the current manager's branch
+        if ($user->isManagerAccount()) {
+            return isset($user->ManageBranch->id)
+                && isset($model->WorkForBranch->id)
+                && (($model->WorkForBranch->id ?? null)  == ($user->ManageBranch->id ?? null));
+        }
+
+        return false;
     }
 
     /**

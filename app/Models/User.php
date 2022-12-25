@@ -29,6 +29,7 @@ class User extends Authenticatable
         'address_line_3',
         'address_city_id',
         'contact_number',
+        'work_for_branch_id', //employee relationship
         'password',
         'role',
         'is_activated'
@@ -87,8 +88,12 @@ class User extends Authenticatable
         return $this->role == self::$ROLE_USER;
     }
 
-    public function Branch()
+    public function ManageBranch()
     {
         return $this->hasOne(Branch::class, "manager_id");
+    }
+
+    public function WorkForBranch(){
+        return $this->belongsTo(Branch::class, "work_for_branch_id");
     }
 }

@@ -18,9 +18,7 @@ class BranchPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->isSuperAdminAccount()
-            || $user->isManagerAccount()
-            || $user->isCounterAccount();
+        return $user->isSuperAdminAccount();
     }
 
     /**
@@ -45,8 +43,7 @@ class BranchPolicy
      */
     public function create(User $user)
     {
-        return $user->isSuperAdminAccount()
-            || $user->isManagerAccount();
+        return $user->isSuperAdminAccount();
     }
 
     /**
@@ -58,7 +55,10 @@ class BranchPolicy
      */
     public function update(User $user, Branch $branch)
     {
-        return $user->isSuperAdminAccount() || $model->id == $user->id;
+        if ($user->isManagerAccount()) {
+            return ($user->ManageBranch->id ?? null) === $branch->id;
+        }
+        return $user->isSuperAdminAccount() || $branch->id == $user->id;
     }
 
     /**

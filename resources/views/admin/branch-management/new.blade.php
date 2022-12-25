@@ -1,9 +1,17 @@
 @extends('layouts.side-bar')
-@include('menues.sidebar-body-super-admin')
-@include('super-admin.branch-management.edit-update-sections')
+@include('admin.branch-management.edit-update-sections')
 
 @section('sidebar-body')
-    @yield('sidebar-body-super-admin')
+    @if (Auth::user()->isSuperAdminAccount())
+        @include('menues.sidebar-body-super-admin')
+        @yield('sidebar-body-super-admin')
+    @elseif(Auth::user()->isManagerAccount())
+        @include('menues.sidebar-body-admin')
+        @yield('sidebar-body-admin')
+    @elseif(Auth::user()->isCounterAccount())
+        @include('menues.sidebar-body-user')
+        @yield('sidebar-body-user')
+    @endif
 @endsection
 
 @section('main-header')
@@ -13,11 +21,9 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item active " aria-current="page">
-                        <a href="{{ route('super-admin.branches-management') }}"
-                            class="text-dark text-decoration-none">Parkings</a>
+                        <a href="{{ route('branches-management') }}" class="text-dark text-decoration-none">Parkings</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Branch #{{ $branch->id }}</li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                    <li class="breadcrumb-item active" aria-current="page">New</li>
                 </ol>
             </nav>
         </div>
@@ -28,9 +34,9 @@
     <div class="container">
         <div class="card" style="max-width: 680px">
             <div class="card-header">
-                <h2 class="fs-5 m-0">Edit Branch # {{ $branch->id }}</h2>
+                <h2 class="fs-5 m-0">New Branch</h2>
             </div>
-            <form action="{{ route('super-admin.branches-management.edit', ['branch' => $branch->id]) }}" method="post">
+            <form action="{{ route('branches-management.new') }}" method="post">
                 @csrf
 
                 @yield('form-body')

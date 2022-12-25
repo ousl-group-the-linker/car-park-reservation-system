@@ -1,16 +1,33 @@
 @extends('layouts.side-bar')
-@include('menues.sidebar-body-super-admin')
 
 @section('sidebar-body')
-    @yield('sidebar-body-super-admin')
+    @if (Auth::user()->isSuperAdminAccount())
+        @include('menues.sidebar-body-super-admin')
+        @yield('sidebar-body-super-admin')
+    @elseif(Auth::user()->isManagerAccount())
+        @include('menues.sidebar-body-admin')
+        @yield('sidebar-body-admin')
+    @elseif(Auth::user()->isCounterAccount())
+        @include('menues.sidebar-body-user')
+        @yield('sidebar-body-user')
+    @endif
 @endsection
 
 @section('main-header')
     <div class="header d-flex flex-column justify-content-center">
-        <h1 class="fs-4 m-0"><i class="bi bi-people me-2 text-main"></i>&nbsp;Admin Management</h1>
+        <h1 class="fs-4 m-0"><i class="bi bi-p-circle me-2 text-main"></i>&nbsp;Branch #{{ $branch->id }} |
+            {{ $branch->name }}</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item active" aria-current="page">Admins</li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <a href="{{ route('branches-management') }}" class="text-decoration-none text-dark">Parkings</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <a href="{{ route('branches-management.view', ['branch' => $branch->id]) }}"
+                        class="text-decoration-none text-dark">Branch
+                        #{{ $branch->id }}</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Admin Management</li>
             </ol>
         </nav>
     </div>
@@ -21,18 +38,13 @@
 
 @section('main-body')
     <div class="container">
-        <div class="row mb-4 p-0 m-0">
-            <div class="col-12 d-flex p-0 m-0" style="max-width: 780px">
-                <a href="{{ route('super-admin.admin-management.new') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-square me-1"></i>New Admin</a>
-            </div>
-        </div>
         <div class="p-0" style="max-width: 780px">
             <div class="card">
                 <div class="card-header">
                     <h2 class="fs-5 m-0">Search Admins</h2>
                 </div>
-                <form action="{{ route('super-admin.admin-management') }}" method="get">
+                <form action="{{ route('branches-management.admin-management', ['branch' => $branch->id]) }}"
+                    method="get">
 
                     @if (session()->has('profile-update-success-message'))
                         <div class="alert alert-info alert-dismissible fade show mx-2 mt-2" role="alert">
@@ -56,14 +68,13 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end">
-                        <a href="{{ route('super-admin.admin-management') }}" class="btn btn-light me-2"><i
-                                class="bi bi-arrow-clockwise me-1"></i>Reset</a>
+                        <a href="{{ route('branches-management.admin-management', ['branch' => $branch->id]) }}"
+                            class="btn btn-light me-2"><i class="bi bi-arrow-clockwise me-1"></i>Reset</a>
                         <button class="btn btn-primary"><i class="bi bi-funnel-fill me-1"></i></i>Filter</button>
                     </div>
                 </form>
             </div>
         </div>
-
         <div class="p-0 mt-4" style="max-width: 780px">
             @if ($admin_accounts->count() > 0)
                 @foreach ($admin_accounts as $admin_account)
@@ -84,10 +95,7 @@
                             </p>
                         </div>
 
-                        <div class="col-12 col-sm-6 col-xl-3 mb-2 mb-xl-0 p-0 d-flex flex-column align-items-start">
-                            <span class="fs-6 fw-light">Branch</span>
-                            <p class="text-wrap m-0">{{ $admin_account->Branch->name ?? 'No Branch' }}</p>
-                        </div>
+
                         <hr class="col-12 d-flex my-2">
                         <div class="col-12 col-sm-6 col-xl-4 mb-2 mb-xl-0 p-0 pb-0 d-flex flex-column align-items-start">
                             <span class="fs-6 fw-light">Role</span>
@@ -105,13 +113,14 @@
                             class="ps-0 col-12 col-xl-4 pt-4 pt-xl-0 pe-0 d-flex flex-row justify-content-end align-items-center">
 
                             @can('view', $admin_account)
-                                <a href="{{ route('super-admin.admin-management.view', ['admin' => $admin_account->id]) }}"
+                                <a target="_blank"
+                                    href="{{ route('branches-management.admin-management.view', ['branch' => $branch->id, 'admin' => $admin_account->id]) }}"
                                     class="btn btn-light me-2"><i class="bi bi-box-arrow-up-right me-1"></i>View</a>
                             @endcanany
-
                             @can('update', $admin_account)
-                                <a href="{{ route('super-admin.admin-management.edit', ['admin' => $admin_account->id]) }}"
-                                    class="btn btn-light"><i class="bi bi-pencil-fill me-1"></i>Edit</a>
+                                <a target="_blank"
+                                    href="{{ route('branches-management.admin-management.edit', ['branch' => $branch->id, 'admin' => $admin_account->id]) }}"
+                                    class="btn btn-light me-2"><i class="bi bi-box-arrow-up-right me-1"></i>Edit</a>
                             @endcanany
                         </div>
                     </div>

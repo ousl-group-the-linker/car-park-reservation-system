@@ -24,6 +24,7 @@ class CreateBranchesTable extends Migration
             $table->string('address_line_3')->nullable();
             $table->unsignedBigInteger('address_city_id');
             $table->unsignedBigInteger("parking_slots");
+            $table->float("hourly_rate")->default(0);
             $table->unsignedBigInteger("manager_id")->nullable();
             $table->timestamps();
 

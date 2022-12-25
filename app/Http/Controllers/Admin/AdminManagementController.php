@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\SuperAdmin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
@@ -25,6 +25,14 @@ class AdminManagementController extends Controller
 
         $adminAccounts = User::query();
 
+        if (Auth::user()->isManagerAccount()) {
+            $adminAccounts->where(function ($query) {
+                $query->whereHas("WorkForBranch", function ($query) {
+                    $query->where("id", Auth::user()->ManageBranch->id ?? null);
+                });
+            });
+        }
+
         if (($data->email ?? NULL) != null) {
             $adminAccounts->where("email", $data->email);
         }
@@ -33,7 +41,7 @@ class AdminManagementController extends Controller
             ->orderBy("created_at", "DESC")
             ->paginate(20);
 
-        return view("super-admin.admin-management.index", [
+        return view("admin.admin-management.index", [
             "admin_accounts" => $adminAccounts
         ]);
     }
@@ -50,7 +58,7 @@ class AdminManagementController extends Controller
             User::$ROLE_MANAGER => "Manager",
             User::$ROLE_COUNTER => "Counter",
         ];
-        return view("super-admin.admin-management.new", [
+        return view("admin.admin-management.new", [
             "districts" => $districts,
             "random_password" => $randomPassword,
             "roles" => $roles
@@ -127,7 +135,7 @@ class AdminManagementController extends Controller
             User::$ROLE_MANAGER => "Manager",
             User::$ROLE_COUNTER => "Counter",
         ];
-        return view("super-admin.admin-management.edit", [
+        return view("admin.admin-management.edit", [
             "admin" => $admin,
             "districts" => $districts,
             "roles" => $roles
@@ -149,25 +157,34 @@ class AdminManagementController extends Controller
             "address_line_3" => "nullable|string",
             "address_city" => "required|exists:sri_lanka_cities,id",
             "contact_number" => "required|numeric|digits:10",
-            "role" => ["required", "numeric", Rule::in([User::$ROLE_SUPER_ADMIN, User::$ROLE_MANAGER, User::$ROLE_COUNTER])],
+            "role" => [
+                Rule::when(function () {
+                    return Auth::user()->isSuperAdminAccount();;
+                }, [
+                    "required", "numeric", Rule::in([User::$ROLE_SUPER_ADMIN, User::$ROLE_MANAGER, User::$ROLE_COUNTER]),
+                ])
+            ],
             "is_activated" => "required|numeric|in:1,0",
             "branch_id" => [
                 "nullable",
                 Rule::when(function () use ($request) {
-                    return $request->input("role") == User::$ROLE_MANAGER
-                        || $request->input("role") == User::$ROLE_COUNTER;
+                    return $request->input("role") == User::$ROLE_MANAGER && Auth::user()->isSuperAdminAccount();
                 }, [
                     Rule::exists('branches', "id")->where(function ($query) use ($request, $admin) {
-
-                        if (($admin->Branch->id ?? null) != $request->input("branch_id")) {
+                        if (($admin->ManageBranch->id ?? null) != $request->input("branch_id")) {
                             $query->whereNull('manager_id');
                         }
                     }),
                 ]),
+                Rule::when(function () use ($request) {
+                    return $request->input("role") == User::$ROLE_COUNTER;
+                }, [
+                    Rule::exists('branches', "id")
+                ]),
 
             ]
         ], [
-            "branch_id.exists" => "The selected branch is not a valid branch or it has already associated with another manager.",
+            "branch_id.exists" => "The selected branch is not a valid or it has already associated with another manager.",
             "branch_id.*" => "The branch field is invalid.",
         ]);
 
@@ -179,22 +196,31 @@ class AdminManagementController extends Controller
         $admin->address_line_3 = $data->address_line_3;
         $admin->address_city_id = $data->address_city;
         $admin->contact_number = $data->contact_number;
-        $admin->role = $data->role;
         $admin->is_activated = $data->is_activated;
-        $admin->save();
 
-        if (isset($admin->Branch)) {
-            Branch::findorfail($admin->Branch->id)->Manager()->disassociate($admin)->save();
-        }
+        if (Auth::user()->isSuperAdminAccount()) {
+            $admin->role = $data->role;
 
-        if (
-            $data->role == User::$ROLE_MANAGER
-            || $data->role == User::$ROLE_COUNTER
-        ) {
-            if (isset($data->branch_id)) {
-                Branch::findorfail($data->branch_id)->Manager()->associate($admin)->save();
+            if (isset($admin->ManageBranch)) {
+                Branch::findorfail($admin->ManageBranch->id)->Manager()->disassociate($admin)->save();
+            }
+            if (isset($admin->WorkForBranch)) {
+                $admin->WorkForBranch()->disassociate($data->branch_id)->save();
+            }
+
+            if ($data->role == User::$ROLE_MANAGER) {
+                if (isset($data->branch_id)) {
+                    Branch::findorfail($data->branch_id)->Manager()->associate($admin)->save();
+                }
+            } else  if ($data->role == User::$ROLE_COUNTER) {
+                if (isset($data->branch_id)) {
+                    $admin->WorkForBranch()->associate($data->branch_id)->save();
+                }
             }
         }
+
+        $admin->save();
+
 
         return redirect()->route('super-admin.admin-management.edit', ['admin' => $admin->id])
             ->with(["profile-update-success-message" => "Admin account information is successfully updated."]);
@@ -234,9 +260,9 @@ class AdminManagementController extends Controller
      */
     public function showAdmin(User $admin, Request $request)
     {
-        $this->authorize("view", $admin);
+        // $this->authorize("view", $admin);
 
-        return view("super-admin.admin-management.view", [
+        return view("admin.admin-management.view", [
             "admin" => $admin
         ]);
     }
