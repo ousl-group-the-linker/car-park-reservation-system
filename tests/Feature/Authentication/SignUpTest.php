@@ -1,13 +1,14 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Authentication;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\SriLankaCity;
 use Illuminate\Support\Str;
-class AuthTest extends TestCase
+
+class SignUpTest extends TestCase
 {
     use RefreshDatabase;
     /**
@@ -37,7 +38,7 @@ class AuthTest extends TestCase
         $response->assertStatus(302); //it should redirect
 
         //show all errors if there is any
-        if(session('errors') != null){ 
+        if(session('errors') != null){
             var_dump(session('errors'));
         }
 
