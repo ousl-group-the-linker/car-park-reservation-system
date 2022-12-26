@@ -33,6 +33,11 @@ class SriLankaDistrict extends Model
      */
     protected $casts = [];
 
+    public function getNameAttribute()
+    {
+        return $this->attributes["name"] . " District";
+    }
+
     public function Province()
     {
         return $this->belongsTo(SriLankaProvince::class, "sri_lanka_province_id");

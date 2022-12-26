@@ -10,6 +10,11 @@ html {
 }
 
 main {
+    --sidebar-min-width: 3.5rem;
+    --sidebar-max-width: 280px;
+    --sidebar-width: var(--sidebar-max-width);
+
+
     display: flex;
     flex-wrap: nowrap;
     height: -webkit-fill-available;
@@ -19,8 +24,6 @@ main {
     overflow-y: hidden;
 
     .side-bar {
-        --sidebar-max-width: 280px;
-        --sidebar-width: var(--sidebar-max-width);
         transition: width 0.25s ease-out;
 
         width: var(--sidebar-width);
@@ -97,6 +100,12 @@ main {
 
         @media (max-width:520px) {
             --sidebar-width: var(--sidebar-max-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+
+            z-index: 10;
         }
 
 
@@ -119,12 +128,16 @@ main {
         .main-footer {
             margin-top: 20px;
         }
+
+        @media (max-width:520px) {
+            margin-left: var(--sidebar-min-width) !important;
+        }
     }
 
 
     &:not(.expanded) {
         .side-bar {
-            --sidebar-width: 3.5rem;
+            --sidebar-width: var(--sidebar-min-width);
             padding-left: 0 !important;
             padding-right: 0 !important;
             display: flex;
@@ -180,6 +193,10 @@ main {
 
             .logo-icon {
                 display: none !important;
+            }
+
+            @media (max-width:520px) {
+                width: 100% !important;
             }
         }
 

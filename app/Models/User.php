@@ -29,6 +29,7 @@ class User extends Authenticatable
         'address_line_3',
         'address_city_id',
         'contact_number',
+        'work_for_branch_id', //employee relationship
         'password',
         'role',
         'is_activated'
@@ -51,6 +52,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function City()
+    {
+        return $this->belongsTo(SriLankaCity::class, "address_city_id");
+    }
 
     public function getRoleTextAttribute()
     {
@@ -80,5 +86,14 @@ class User extends Authenticatable
     public function isUserAccount()
     {
         return $this->role == self::$ROLE_USER;
+    }
+
+    public function ManageBranch()
+    {
+        return $this->hasOne(Branch::class, "manager_id");
+    }
+
+    public function WorkForBranch(){
+        return $this->belongsTo(Branch::class, "work_for_branch_id");
     }
 }

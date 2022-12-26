@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersTable extends Migration
+class CreateBranchesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,23 +13,21 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('branches', function (Blueprint $table) {
+
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('email')->unique();
+            $table->string("name");
+            $table->string("email")->unique();
+            $table->string("contact_number");
             $table->string('address_line_1');
             $table->string('address_line_2');
             $table->string('address_line_3')->nullable();
             $table->unsignedBigInteger('address_city_id');
-            $table->string('contact_number');
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->integer('role');
-            $table->unsignedBigInteger('work_for_branch_id')->nullable();
-            $table->string('is_activated')->default(true);
-            $table->rememberToken();
+            $table->unsignedBigInteger("parking_slots");
+            $table->float("hourly_rate")->default(0);
+            $table->unsignedBigInteger("manager_id")->nullable();
             $table->timestamps();
+
         });
     }
 
@@ -40,6 +38,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('branches');
     }
 }

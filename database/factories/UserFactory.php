@@ -2,8 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\SriLankaCity;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserFactory extends Factory
@@ -23,11 +25,31 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail,
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
+            'email' => $this->faker->email(),
+            'address_line_1' => $this->faker->streetSuffix(),
+            'address_line_2' => $this->faker->streetName(),
+            'address_line_3' => null,
+            'address_city_id' => SriLankaCity::all()->random()->id,
+            'contact_number' => "0" . $this->faker->randomNumber(2) . $this->faker->randomNumber(7),
+            'password' => Hash::make("1234567890"),
+            // 'work_for_branch_id' =>
+            'is_activated' => true
         ];
+    }
+
+    /**
+     * Indicate that the user is suspended.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function role($role)
+    {
+        return $this->state(function (array $attributes) use ($role) {
+            return [
+                'role' => $role,
+            ];
+        });
     }
 }
