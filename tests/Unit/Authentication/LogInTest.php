@@ -58,7 +58,7 @@ class LogInTest extends TestCase
         $user=User::create([
             'first_name' => "Diana",
             'last_name' => "bloom",
-            'email' => "bloommail.com",
+            'email' => "bloommail.com", //invalid email address
             'address_line_1' => "400",
             'address_line_2'=> "low level",
             'address_line_3'=> "",
