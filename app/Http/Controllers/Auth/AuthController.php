@@ -168,6 +168,10 @@ class AuthController extends Controller
     public function showForgotPasswordStep2(Request $request)
     {
         $token = $this->validatePasswordResetToken($request->input("email"), $request->input("token"));
+        if ($token == null) {
+            return redirect()->route("auth.forgot-password.step.1")
+                ->withErrors(["error-message" => "Invalid password reset link"]);
+        }
 
         return view("auth.forgot-password-2", [
             "email" => $token->token->email,
@@ -182,6 +186,10 @@ class AuthController extends Controller
     public function uodatePasswordForgotPasswordStep2(Request $request)
     {
         $token = $this->validatePasswordResetToken($request->input("email"), $request->input("token"));
+        if ($token == null) {
+            return redirect()->route("auth.forgot-password.step.1")
+                ->withErrors(["error-message" => "Invalid password reset link"]);
+        }
 
         $data = (object)$request->validate([
             "password" => "required|min:8|confirmed"
@@ -204,8 +212,7 @@ class AuthController extends Controller
         // validate token & email
         $validator = Validator::make(["email" => $email, "token" => $token], [
             "token" => "required|string|exists:password_reset_tokens,token",
-            "email" => "required|email|exists:password_reset_tokens,email",
-            "email" => "required|email|exists:users,email"
+            "email" => "required|email|exists:password_reset_tokens,email|exists:users,email"
         ]);
 
         $validator->after(function ($validator) {
@@ -226,8 +233,7 @@ class AuthController extends Controller
         });
 
         if ($validator->fails()) {
-            return redirect()->route("auth.forgot-password.step.1")
-                ->withErrors(["error-message" => "Invalid password reset link"]);
+            return null;
         }
 
         $data = (object)$validator->validated();
@@ -238,6 +244,10 @@ class AuthController extends Controller
             ->first();
 
         $user = User::where("email", $data->email)->first();
+
+        if ($user == null || $token == null) {
+            return null;
+        }
 
         return (object)["user" => $user, "token" => $token];
     }
