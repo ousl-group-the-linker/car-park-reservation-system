@@ -145,12 +145,14 @@ class AuthController extends Controller
 
         // send the token to the given email address only if the account exists.
         if ($user) {
+            $rawToken = Str::random(10) . $user->id . time() . random_int(10, time());
+
             $token = PasswordResetToken::create([
                 "email" => $user->email,
-                "token" => Hash::make(Str::random(10) . $user->id . time() . random_int(10, time()))
+                "token" => Hash::make($rawToken)
             ]);
 
-            $message = (new ResetAccountPassword($token))
+            $message = (new ResetAccountPassword($user->email, $rawToken, $token->created_at))
                 ->onQueue(config("queue.queues.email_queue"));
 
             Mail::to($user)->queue($message);
@@ -168,6 +170,7 @@ class AuthController extends Controller
     public function showForgotPasswordStep2(Request $request)
     {
         $token = $this->validatePasswordResetToken($request->input("email"), $request->input("token"));
+
         if ($token == null) {
             return redirect()->route("auth.forgot-password.step.1")
                 ->withErrors(["error-message" => "Invalid password reset link"]);
@@ -211,23 +214,16 @@ class AuthController extends Controller
     {
         // validate token & email
         $validator = Validator::make(["email" => $email, "token" => $token], [
-            "token" => "required|string|exists:password_reset_tokens,token",
+            "token" => "required|string",
             "email" => "required|email|exists:password_reset_tokens,email|exists:users,email"
         ]);
 
-        $validator->after(function ($validator) {
+        $validator->after(function ($validator) use ($token) {
             if ($validator->errors()->count() > 0) return;
 
             $data = (object)$validator->getData();
 
-            // check whether the requested token is valid
-            $tokenCount = PasswordResetToken::where("email", $data->email)
-                ->where("token", $data->token)
-                ->where("created_at", ">", Carbon::now()->subHours(1))
-                ->count();
-
-
-            if ($tokenCount < 1) {
+            if (!$this->findReletedToken($data->email, $data->token)) {
                 $validator->errors()->add("error", "Invalid password reset link.");
             }
         });
@@ -238,10 +234,7 @@ class AuthController extends Controller
 
         $data = (object)$validator->validated();
 
-        $token = PasswordResetToken::where("email", $data->email)
-            ->where("token", $data->token)
-            ->where("created_at", ">", Carbon::now()->subHours(1))
-            ->first();
+        $token = $this->findReletedToken($data->email, $data->token);
 
         $user = User::where("email", $data->email)->first();
 
@@ -250,5 +243,21 @@ class AuthController extends Controller
         }
 
         return (object)["user" => $user, "token" => $token];
+    }
+
+    private function findReletedToken($email, $token)
+    {
+
+        $savedTokens = PasswordResetToken::where("email", $email)
+            ->where("created_at", ">", Carbon::now()->subHours(1))
+            ->get();
+
+        foreach ($savedTokens as $savedToken) {
+            if (Hash::check($token, $savedToken->token)) {
+                return $savedToken;
+            }
+        }
+
+        return false;
     }
 }
