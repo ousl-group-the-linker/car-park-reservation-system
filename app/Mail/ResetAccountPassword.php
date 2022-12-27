@@ -24,11 +24,11 @@ class ResetAccountPassword extends Mailable implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(PasswordResetToken $token)
+    public function __construct(string $email, string $token, Carbon $createdAt)
     {
-        $this->email = $token->email;
-        $this->token = $token->token;
-        $this->initiatedDateTime = $token->created_at;
+        $this->email = $email;
+        $this->token = $token;
+        $this->initiatedDateTime = $createdAt;
     }
 
     public function via($notifiable)
