@@ -2,6 +2,10 @@
 
 return [
 
+    'queues' => [
+        "email_queue" => "emails"
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Default Queue Connection Name

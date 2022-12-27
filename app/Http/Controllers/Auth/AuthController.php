@@ -151,7 +151,7 @@ class AuthController extends Controller
             ]);
 
             $message = (new ResetAccountPassword($token))
-                ->onQueue("emails");
+                ->onQueue(config("queue.queues.email_queue"));
 
             Mail::to($user)->queue($message);
         }
