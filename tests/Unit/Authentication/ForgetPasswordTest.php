@@ -14,7 +14,7 @@ use App\Models\PasswordResetToken;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 
-class ResetsPasswordTest extends TestCase
+class ForgetPasswordTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -66,7 +66,7 @@ class ResetsPasswordTest extends TestCase
      *
      * @return void
      */
-    public function testStep1FailOnInValidEmailAddress()
+    public function testStep1FailForAnInValidEmailAddress()
     {
         // create a uniqe email address
         $email = time() . "notexist@mail.com";
@@ -98,7 +98,7 @@ class ResetsPasswordTest extends TestCase
      *
      * @return void
      */
-    public function testShowPasswordResetFormStep2()
+    public function testShowPasswordResetFormForAValidResetLinkStep2()
     {
         // create a test user
         $user = User::factory()->role(User::$ROLE_USER)->create();
@@ -133,7 +133,7 @@ class ResetsPasswordTest extends TestCase
      *
      * @return void
      */
-    public function testShowInvalidPasswordResetLinkStep2()
+    public function testNotShowNewPasswordFormForAnInvalidPasswordResetLinkStep2()
     {
         $user = User::factory()->role(User::$ROLE_USER)->create();
 
@@ -161,7 +161,7 @@ class ResetsPasswordTest extends TestCase
      *
      * @return void
      */
-    public function testShowCreatePasswordFormForAValidResetLink()
+    public function testValidateCreatePasswordFormForAValidResetLink()
     {
         // create test user
         $user = User::factory()->role(User::$ROLE_USER)->create();
@@ -203,7 +203,7 @@ class ResetsPasswordTest extends TestCase
      *
      * @return void
      */
-    public function testShowCreatePasswordFormForAnInValidResetLink()
+    public function testValidateCreatePasswordFormForAnInValidResetLink()
     {
         // create test user
         $user = User::factory()->role(User::$ROLE_USER)->create();
