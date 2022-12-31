@@ -129,7 +129,7 @@ class AccountManagementTest extends TestCase
      *
      * @return void
      */
-    public function testIsPasswordUpdatesCorrectly()
+   /* public function testIsPasswordUpdatesCorrectly()
     {
         $new_password =Str::random();
         $password="1234567890";
@@ -166,5 +166,5 @@ class AccountManagementTest extends TestCase
             $response->assertStatus(302);
         }
 
-    }
+    }*/
 }
