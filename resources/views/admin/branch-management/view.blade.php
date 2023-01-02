@@ -75,7 +75,8 @@
                     <div>
                         @can('view', $branch)
                             <a class="btn btn-light"
-                                href="{{ route('branches-management.view-extra', ['branch' => $branch->id]) }}"><i class="bi bi-box-arrow-up-right me-2"></i>View</a>
+                                href="{{ route('branches-management.view-extra', ['branch' => $branch->id]) }}">
+                                    <i class="bi bi-box-arrow-up-right me-2"></i>View</a>
                         @endcan
                         @can('update', $branch)
                             <a class="btn btn-light"

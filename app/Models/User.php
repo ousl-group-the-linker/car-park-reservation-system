@@ -71,6 +71,17 @@ class User extends Authenticatable
                 return "User";
         }
     }
+    public function getAddressTextAttribute()
+    {
+        $addressChunks = [
+            $this->address_line_1,
+            $this->address_line_2,
+            $this->address_line_3,
+            $this->City->name,
+        ];
+        $addressChunks = array_filter($addressChunks);
+        return join(", ", $addressChunks);
+    }
     public function isSuperAdminAccount()
     {
         return $this->role == self::$ROLE_SUPER_ADMIN;

@@ -251,7 +251,7 @@
 
                                             <div class="col-12 col-sm-3 mb-xl-0 d-flex flex-column align-items-end">
 
-                                                <a href="#" class="btn btn-light"><i
+                                                <a href="{{route('bookings-management.view', ['booking' => $booking->id])}}" target="_blank" class="btn btn-light"><i
                                                         class="bi bi-arrow-up-right-circle-fill me-2"></i></i>View</a>
                                             </div>
                                         </div>

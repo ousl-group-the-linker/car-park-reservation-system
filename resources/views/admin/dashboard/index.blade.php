@@ -34,8 +34,20 @@
             </ol>
         </nav>
     </div>
+@endsection
 
-    @if (!isset(Auth::user()->ManageBranch))
+
+@section('main-body')
+    @if (Auth::user()->isManagerAccount() && Auth::user()->ManageBranch !== null)
+        <div class="container w-100 py-4 d-flex justify-content-center align-items-center flex-column"
+            style=";min-height:420px">
+            <img src="{{ asset('images/ilustrations/lost-online.svg') }}" alt="Lost online" width="120">
+            <h3 class="mt-4">Ops...</h3>
+            <p class="text-center">You are not associated with any branches at the movement, please contact your system
+                administrator.</p>
+        </div>
+    @endif
+    @if (Auth::user()->isCounterAccount() && Auth::user()->WorkForBranch !== null)
         <div class="container w-100 py-4 d-flex justify-content-center align-items-center flex-column"
             style=";min-height:420px">
             <img src="{{ asset('images/ilustrations/lost-online.svg') }}" alt="Lost online" width="120">

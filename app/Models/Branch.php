@@ -55,6 +55,13 @@ class Branch extends Model
         return $this->hasMany(User::class, "work_for_branch_id");
     }
 
+    public function Bookings(){
+        return $this->hasMany(Booking::class, "branch_id");
+    }
+    public function scopeToday($query){
+        return $this->where("started");
+    }
+
     public function getAddressTextAttribute()
     {
         $chunks = [
@@ -70,7 +77,7 @@ class Branch extends Model
 
     public function reservedSlots()
     {
-        return 2;
+        return $this->Bookings()->today()->onGoing();
     }
     public function reservedPersentage()
     {

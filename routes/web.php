@@ -55,7 +55,7 @@ Route::group(["middleware" => "auth.role:manager,counter", "prefix" => "admin"],
 });
 
 // Super Admin, Manager, Counter account's routes (common)
-Route::group(["middleware" => "auth.role:super-admin,manager,counter"], function () {
+Route::group(["middleware" => ["auth.role:super-admin,manager,counter", "auth.admin.has.branch"]], function () {
 
     Route::get("branches-management", "Admin\BranchManegementController@index")->name("branches-management");
 
@@ -82,7 +82,14 @@ Route::group(["middleware" => "auth.role:super-admin,manager,counter"], function
     Route::get("branches-management/{branch}/admin-management/{admin}", "Admin\BranchManegementController@showAdmin")->name("branches-management.admin-management.view");
 
 
-    Route::get("s-admin/bookings-management", "Admin\BookingsManagementController@index")->name("bookings-management");
+    Route::get("bookings-management", "Admin\BookingsManagementController@index")->name("bookings-management");
+    Route::get("bookings-management/{booking}", "Admin\BookingsManagementController@view")->name("bookings-management.view");
+    Route::post("bookings-management/{booking}/mark-as-ongoing", "Admin\BookingsManagementController@markAsOnGoing")->name("bookings-management.mark-as-ongoing");
+    Route::post("bookings-management/{booking}/mark-as-cancelled", "Admin\BookingsManagementController@markAsCancelled")->name("bookings-management.mark-as-cancelled");
+    Route::post("bookings-management/{booking}/mark-as-finished", "Admin\BookingsManagementController@markAsFinished")->name("bookings-management.mark-as-finished");
+
+
+
 
     Route::get("s-admin/transactions-management", "Admin\TransactionsManagementController@index")->name("transactions-management");
 

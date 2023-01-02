@@ -65,7 +65,7 @@ class Booking extends Model
     }
     public function Client()
     {
-        return $this->belongsTo(Branch::class, "client_id");
+        return $this->belongsTo(User::class, "client_id");
     }
 
     public function isPending()
@@ -85,16 +85,23 @@ class Booking extends Model
         return $this->status === self::STATUS_FINISHED;
     }
 
+    public function estimatedHours(){
+        return $this->estimated_end_time->diffInHours($this->estimated_start_time);
+    }
+    public function totalBookingHours(){
+        return $this->real_end_time->diffInHours($this->real_start_time);
+    }
+
     public function estimatedFee()
     {
-        $estimatedDurationInHours = $this->estimated_end_time->diffInMinutes($this->estimated_start_time);
+        $estimatedDurationInHours = $this->estimated_end_time->diffInHours($this->estimated_start_time);
 
         return round(bcmul($estimatedDurationInHours, $this->hourly_rate, 4), 2);
     }
 
     public function totalFee()
     {
-        $totalDurationInHours = $this->real_end_time->diffInMinutes($this->real_start_time);
+        $totalDurationInHours = $this->real_end_time->diffInHours($this->real_start_time);
 
         return round(bcmul($totalDurationInHours, $this->hourly_rate, 4), 2);
     }
