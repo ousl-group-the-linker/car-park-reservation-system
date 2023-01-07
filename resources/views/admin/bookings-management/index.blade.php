@@ -1,16 +1,8 @@
 @extends('layouts.side-bar')
+@include('common.side-bar.side-bar')
 
 @section('sidebar-body')
-    @if (Auth::user()->isSuperAdminAccount())
-        @include('menues.sidebar-body-super-admin')
-        @yield('sidebar-body-super-admin')
-    @elseif(Auth::user()->isManagerAccount())
-        @include('menues.sidebar-body-admin')
-        @yield('sidebar-body-admin')
-    @elseif(Auth::user()->isCounterAccount())
-        @include('menues.sidebar-body-user')
-        @yield('sidebar-body-user')
-    @endif
+    @yield('common-side-bar')
 @endsection
 
 @section('main-header')
@@ -74,11 +66,11 @@
                                 <div class="col-6 mb-3">
                                     <label for="city" class="form-label">Branch</label>
                                     <select class="form-select   @if ($errors->has('branch')) is-invalid @endif"
-                                        aria-label="Branch" name="branch">
+                                        aria-label="Branch" name="branch" @if(Auth::user()->isManagerAccount() || Auth::user()->isCounterAccount()) disabled @endif>
                                         <option selected value="">Any</option>
                                         @foreach ($branches as $branch)
                                             <option value="{{ $branch->id }}"
-                                                @if (request()->get('branch') == $branch->id) selected @endif>{{ $branch->name }}
+                                                @if (request()->get('branch', Auth::user()->WorkForBranch->id ?? Auth::user()->ManageBranch->id ?? null) == $branch->id) selected @endif>{{ $branch->name }}
                                                 ({{ $branch->City->name }})
                                             </option>
                                         @endforeach

@@ -1,17 +1,8 @@
 @extends('layouts.side-bar')
-
+@include('common.side-bar.side-bar')
 
 @section('sidebar-body')
-    @if (Auth::user()->isSuperAdminAccount())
-        @include('menues.sidebar-body-super-admin')
-        @yield('sidebar-body-super-admin')
-    @elseif(Auth::user()->isManagerAccount())
-        @include('menues.sidebar-body-admin')
-        @yield('sidebar-body-admin')
-    @elseif(Auth::user()->isCounterAccount())
-        @include('menues.sidebar-body-user')
-        @yield('sidebar-body-user')
-    @endif
+    @yield('common-side-bar')
 @endsection
 
 @section('main-header')
@@ -38,7 +29,7 @@
 
 
 @section('main-body')
-    @if (Auth::user()->isManagerAccount() && Auth::user()->ManageBranch !== null)
+    @if (Auth::user()->isManagerAccount() && Auth::user()->ManageBranch == null)
         <div class="container w-100 py-4 d-flex justify-content-center align-items-center flex-column"
             style=";min-height:420px">
             <img src="{{ asset('images/ilustrations/lost-online.svg') }}" alt="Lost online" width="120">
@@ -47,7 +38,7 @@
                 administrator.</p>
         </div>
     @endif
-    @if (Auth::user()->isCounterAccount() && Auth::user()->WorkForBranch !== null)
+    @if (Auth::user()->isCounterAccount() && Auth::user()->WorkForBranch == null)
         <div class="container w-100 py-4 d-flex justify-content-center align-items-center flex-column"
             style=";min-height:420px">
             <img src="{{ asset('images/ilustrations/lost-online.svg') }}" alt="Lost online" width="120">

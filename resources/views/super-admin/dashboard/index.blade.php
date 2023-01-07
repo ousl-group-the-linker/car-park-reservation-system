@@ -1,10 +1,9 @@
 @extends('layouts.side-bar')
+@include('common.side-bar.side-bar')
 
 @section('sidebar-body')
-    @include('menues.sidebar-body-super-admin')
-    @yield('sidebar-body-super-admin')
+    @yield('common-side-bar')
 @endsection
-
 
 @section('main-header')
     <div class="header d-flex flex-column justify-content-center">

@@ -21,6 +21,8 @@ Route::get('/', function () {
         return redirect()->route("super-admin.dashboard");
     } else if (Auth::user()->isManagerAccount() || Auth::user()->isCounterAccount()) {
         return redirect()->route("admin.dashboard");
+    } else if (Auth::user()->isUserAccount()) {
+        return redirect()->route("find-parking-lot");
     }
 })->middleware("auth")->name("home");
 
@@ -111,6 +113,14 @@ Route::group(["middleware" => ["auth.role:super-admin,manager,counter", "auth.ad
 
 // User account's routes
 Route::group(["middleware" => "auth.role:user"], function () {
+    Route::get("/find-parking-lot", "User\BranchesController@index")->name("find-parking-lot");
+
+    Route::get("/my-bookings", "User\BookingsController@index")->name("my-bookings");
+    Route::get("/my-bookings/place-booking", "User\BookingsController@new")->name("my-bookings.new");
+    Route::post("/my-bookings/place-booking", "User\BookingsController@placeBooking");
+
+    Route::get("/my-bookings/{booking}", "User\BookingsController@view")->name("my-bookings.view");
+    Route::post("/my-bookings/{booking}/mark-as-cancelled", "User\BookingsController@markAsCancelled")->name("my-bookings.cancel");
 });
 
 // common routes for all users

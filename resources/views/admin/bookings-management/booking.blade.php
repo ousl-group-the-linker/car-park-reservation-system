@@ -1,16 +1,8 @@
 @extends('layouts.side-bar')
+@include('common.side-bar.side-bar')
 
 @section('sidebar-body')
-    @if (Auth::user()->isSuperAdminAccount())
-        @include('menues.sidebar-body-super-admin')
-        @yield('sidebar-body-super-admin')
-    @elseif(Auth::user()->isManagerAccount())
-        @include('menues.sidebar-body-admin')
-        @yield('sidebar-body-admin')
-    @elseif(Auth::user()->isCounterAccount())
-        @include('menues.sidebar-body-user')
-        @yield('sidebar-body-user')
-    @endif
+    @yield('common-side-bar')
 @endsection
 
 @section('main-header')
@@ -18,7 +10,9 @@
         <h1 class="fs-4 m-0"><i class="bi bi-receipt me-2 text-main"></i>&nbsp;Bookings Management</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item active" aria-current="page">Bookings</li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <a href="{{route('bookings-management')}}" class="text-decoration-none text-dark">Bookings</a>
+                </li>
                 <li class="breadcrumb-item active" aria-current="page">Booking #{{ $booking->id }}</li>
             </ol>
         </nav>

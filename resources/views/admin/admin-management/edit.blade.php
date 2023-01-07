@@ -1,19 +1,15 @@
 @extends('layouts.side-bar')
+@include('common.side-bar.side-bar')
+
+@section('sidebar-body')
+    @yield('common-side-bar')
+@endsection
 
 @if (!$admin->isSuperAdminAccount())
     @include('admin.admin-management.branch-select')
 @endif
 
 
-@section('sidebar-body')
-    @if (Auth::user()->isSuperAdminAccount())
-        @include('menues.sidebar-body-super-admin')
-        @yield('sidebar-body-super-admin')
-    @elseif(Auth::user()->isManagerAccount())
-        @include('menues.sidebar-body-manager')
-        @yield('sidebar-body-super-admin')
-    @endif
-@endsection
 
 @section('main-header')
     <div class="header d-flex flex-column justify-content-center">

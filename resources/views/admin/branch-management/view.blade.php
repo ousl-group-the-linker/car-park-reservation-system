@@ -1,16 +1,8 @@
 @extends('layouts.side-bar')
+@include('common.side-bar.side-bar')
 
 @section('sidebar-body')
-    @if (Auth::user()->isSuperAdminAccount())
-        @include('menues.sidebar-body-super-admin')
-        @yield('sidebar-body-super-admin')
-    @elseif(Auth::user()->isManagerAccount())
-        @include('menues.sidebar-body-admin')
-        @yield('sidebar-body-admin')
-    @elseif(Auth::user()->isCounterAccount())
-        @include('menues.sidebar-body-user')
-        @yield('sidebar-body-user')
-    @endif
+    @yield('common-side-bar')
 @endsection
 
 @section('main-header')
@@ -51,7 +43,7 @@
                         <div class="row mb-2">
                             <div class="col-4">
                                 <span class="fw-lighter">Reservations</span>
-                                <p class="m-0">{{ $branch->reservedSlots() }}</p>
+                                <p class="m-0">{{ $branch->reservedSlots }}</p>
                             </div>
                             <div class="col-4">
                                 <span class="fw-lighter">Capacity</span>
@@ -63,8 +55,10 @@
                 </div>
                 <div class="card-footer d-flex justify-content-between">
                     <div>
-                        <a class="btn btn-light" href="{{route('bookings-management')}}"><i class="bi bi-receipt me-2"></i>Booking Management</a>
-                        <a class="btn btn-light" href="{{route('transactions-management')}}"><i class="bi bi-arrow-left-right me-2"></i>Transactions</a>
+                        <a class="btn btn-light" href="{{ route('bookings-management') }}"><i
+                                class="bi bi-receipt me-2"></i>Booking Management</a>
+                        <a class="btn btn-light" href="{{ route('transactions-management') }}"><i
+                                class="bi bi-arrow-left-right me-2"></i>Transactions</a>
 
                         @if (Auth::user()->isSuperAdminAccount() || Auth::user()->isManagerAccount())
                             <a class="btn btn-light"
@@ -76,7 +70,7 @@
                         @can('view', $branch)
                             <a class="btn btn-light"
                                 href="{{ route('branches-management.view-extra', ['branch' => $branch->id]) }}">
-                                    <i class="bi bi-box-arrow-up-right me-2"></i>View</a>
+                                <i class="bi bi-box-arrow-up-right me-2"></i>View</a>
                         @endcan
                         @can('update', $branch)
                             <a class="btn btn-light"
@@ -91,12 +85,14 @@
                     <h2 class="fs-5 m-0">Capacity</h2>
                 </div>
                 <div class="card-body">
-                    <span class="d-block mb-2">{{ $branch->reservedSlots() }} of {{ $branch->parking_slots }} Booked
-                        (10%)</span>
+                    <span class="d-block mb-2">{{ $branch->reservedSlots()->count() }} of {{ $branch->parking_slots }}
+                        Booked
+                        ({{ ($branch->reservedSlots()->count() / $branch->parking_slots) * 100 }})</span>
                     <div class="progress">
-                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ $branch->reservedSlots() }}"
-                            aria-valuemin="0" aria-valuemax="{{ $branch->parking_slots }}"
-                            style="width: {{ $branch->reservedPersentage() }}%"></div>
+                        <div class="progress-bar" role="progressbar"
+                            aria-valuenow="{{ $branch->reservedSlots()->count() }}" aria-valuemin="0"
+                            aria-valuemax="{{ $branch->parking_slots }}"
+                            style="width: {{ $branch->reservedSlots()->count() }}%"></div>
                     </div>
                 </div>
             </div>
