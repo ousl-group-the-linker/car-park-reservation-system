@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        User::factory(10)->role(User::$ROLE_SUPER_ADMIN)->create();
-        User::factory(10)->role(User::$ROLE_MANAGER)->create();
-        User::factory(10)->role(User::$ROLE_COUNTER)->create();
-        User::factory(10)->role(User::$ROLE_USER)->create();
+        User::factory(1)->role(User::$ROLE_SUPER_ADMIN)->create();
+        User::factory(1)->role(User::$ROLE_MANAGER)->create();
+        User::factory(1)->role(User::$ROLE_COUNTER)->create();
+        User::factory(1)->role(User::$ROLE_USER)->create();
 
-        Branch::factory(10)->create();
+        Branch::factory(1)->create();
 
         Booking::factory(10)->status(Booking::STATUS_PENDING)->create();
         Booking::factory(10)->status(Booking::STATUS_CANCELLED)->create();
