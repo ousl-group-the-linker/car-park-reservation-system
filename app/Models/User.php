@@ -57,6 +57,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(SriLankaCity::class, "address_city_id");
     }
+    public function Bookings(){
+        return $this->hasMany(Booking::class, "client_id");
+    }
 
     public function getRoleTextAttribute()
     {

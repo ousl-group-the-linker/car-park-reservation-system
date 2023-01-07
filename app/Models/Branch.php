@@ -58,9 +58,6 @@ class Branch extends Model
     public function Bookings(){
         return $this->hasMany(Booking::class, "branch_id");
     }
-    public function scopeToday($query){
-        return $this->where("started");
-    }
 
     public function getAddressTextAttribute()
     {
@@ -81,6 +78,6 @@ class Branch extends Model
     }
     public function reservedPersentage()
     {
-        return (2 / $this->parking_slots) * 100;
+        return ($this->reservedSlots()->count() / $this->parking_slots) * 100;
     }
 }

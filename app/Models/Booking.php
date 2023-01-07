@@ -85,6 +85,15 @@ class Booking extends Model
         return $this->status === self::STATUS_FINISHED;
     }
 
+    public function scopeToday($query){
+        return $query->where(function($query){
+            $query->whereDate("estimated_start_time", Carbon::now());
+        });
+    }
+    public function scopeOnGoing($query){
+        return $query->where("status", self::STATUS_ONGOING);
+    }
+
     public function estimatedHours(){
         return $this->estimated_end_time->diffInHours($this->estimated_start_time);
     }

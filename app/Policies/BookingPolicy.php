@@ -83,9 +83,7 @@ class BookingPolicy
      */
     public function markAsOnGoing(User $user, Booking $booking)
     {
-        if ($booking->isPending()) {
-            return Response::allow();
-        }else{
+        if (!$booking->isPending()) {
             return Response::deny("This booking does not permitted to start.");
         }
 
@@ -114,7 +112,7 @@ class BookingPolicy
     {
         if ($booking->isOnGoing()) {
             return Response::allow();
-        }else{
+        } else {
             return Response::deny("This booking does not permitted to start.");
         }
 
@@ -140,10 +138,8 @@ class BookingPolicy
      */
     public function markAsCancelled(User $user, Booking $booking)
     {
-        if (!$booking->isFinished() && !$booking->isCancelled()) {
-            return Response::allow();
-        }else{
-            return Response::deny("This booking does not permitted to start.");
+        if ($booking->isFinished() || $booking->isCancelled()) {
+            return Response::deny("This booking does not permitted to cancel.");
         }
 
         if (
@@ -159,6 +155,7 @@ class BookingPolicy
         if (
             $user->isUserAccount()
             && $user->id == $booking->Client->id
+            && $booking->isPending()
         ) return Response::allow();
 
 
