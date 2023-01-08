@@ -49,7 +49,7 @@
                         @endif
                     </div>
                     <div class="mb-3">
-                        <label for="last_name" class="form-label">First Name</label>
+                        <label for="last_name" class="form-label">Last Name</label>
                         <input type="text" class="form-control  @if ($errors->profileUpdate->has('last_name')) is-invalid @endif"
                             id="last_name" name="last_name" placeholder="Perera"
                             value="{{ old('last_name', Auth::user()->last_name) }}">
