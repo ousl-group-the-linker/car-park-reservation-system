@@ -19,8 +19,18 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     if (Auth::user()->isSuperAdminAccount()) {
         return redirect()->route("super-admin.dashboard");
-    } else if (Auth::user()->isManagerAccount() || Auth::user()->isCounterAccount()) {
-        return redirect()->route("admin.dashboard");
+    } else if (Auth::user()->isManagerAccount()) {
+        if (isset(Auth::user()->ManageBranch->id)) {
+            return redirect()->route("branches-management.view", ["branch" => Auth::user()->ManageBranch->id]);
+        } else {
+            return view("admin.errors.no-branch");
+        }
+    } else if (Auth::user()->isCounterAccount()) {
+        if (isset(Auth::user()->WorkForBranch->id)) {
+            return redirect()->route("branches-management.view", ["branch" => Auth::user()->WorkForBranch->id]);
+        } else {
+            return view("admin.errors.no-branch");
+        }
     } else if (Auth::user()->isUserAccount()) {
         return redirect()->route("find-parking-lot");
     }
@@ -48,24 +58,16 @@ Route::group([], function () {
 // Super admin account's routes
 Route::group(["middleware" => "auth.role:super-admin", "prefix" => "s-admin"], function () {
     Route::get("dashboard", "SuperAdmin\DashboardController@index")->name("super-admin.dashboard");
-});
 
-
-// Manager, Counter account's routes
-Route::group(["middleware" => "auth.role:manager,counter", "prefix" => "admin"], function () {
-    Route::get("dashboard", "Admin\DashboardController@index")->name("admin.dashboard");
+    Route::get("branches-management", "Admin\BranchManegementController@index")->name("branches-management");
+    Route::get("branches-management/new", "Admin\BranchManegementController@showNew")->name("branches-management.new");
+    Route::post("branches-management/new", "Admin\BranchManegementController@saveNew");
+    Route::get("branches-management/search-managers", "Admin\BranchManegementController@searchManagers")->name("branches-management.search-managers");
 });
 
 // Super Admin, Manager, Counter account's routes (common)
 Route::group(["middleware" => ["auth.role:super-admin,manager,counter", "auth.admin.has.branch"]], function () {
 
-    Route::get("branches-management", "Admin\BranchManegementController@index")->name("branches-management");
-
-    Route::group(["middleware" => "auth.role:super-admin"], function () {
-        Route::get("branches-management/new", "Admin\BranchManegementController@showNew")->name("branches-management.new");
-        Route::post("branches-management/new", "Admin\BranchManegementController@saveNew");
-        Route::get("branches-management/search-managers", "Admin\BranchManegementController@searchManagers")->name("branches-management.search-managers");
-    });
 
 
     Route::get("branches-management/{branch}/edit", "Admin\BranchManegementController@showEdit")->name("branches-management.edit");
@@ -90,10 +92,6 @@ Route::group(["middleware" => ["auth.role:super-admin,manager,counter", "auth.ad
     Route::post("bookings-management/{booking}/mark-as-cancelled", "Admin\BookingsManagementController@markAsCancelled")->name("bookings-management.mark-as-cancelled");
     Route::post("bookings-management/{booking}/mark-as-finished", "Admin\BookingsManagementController@markAsFinished")->name("bookings-management.mark-as-finished");
 
-
-
-
-    Route::get("s-admin/transactions-management", "Admin\TransactionsManagementController@index")->name("transactions-management");
 
 
     Route::get("admin-management", "Admin\AdminManagementController@index")->name("super-admin.admin-management");
@@ -121,6 +119,14 @@ Route::group(["middleware" => "auth.role:user"], function () {
 
     Route::get("/my-bookings/{booking}", "User\BookingsController@view")->name("my-bookings.view");
     Route::post("/my-bookings/{booking}/mark-as-cancelled", "User\BookingsController@markAsCancelled")->name("my-bookings.cancel");
+
+    Route::get("balance-and-recharge/transactions", "User\TransactionsController@allTransactions")->name("balance-and-recharge.transactions");
+    Route::get("balance-and-recharge/holds", "User\TransactionsController@allHolds")->name("balance-and-recharge.holds");
+
+    Route::get("balance-and-recharge/recharge-account", "User\TransactionsController@showRechargeForm")->name("balance-and-recharge.recharge");
+    Route::post("balance-and-recharge/recharge-account/confirm", "User\TransactionsController@confirmRecharge")->name("balance-and-recharge.recharge.confirm");
+
+    Route::get("balance-and-recharge/payment-status", "User\TransactionsController@paymentStatusPage")->name("balance-and-recharge.recharge.status");
 });
 
 // common routes for all users
@@ -128,4 +134,12 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get("account-management", "AccountManagementController@index")->name("account-management");
     Route::post("account-management", "AccountManagementController@updateProfile")->name("account-management.update");
     Route::post("account-management/change-password", "AccountManagementController@changePassword")->name("account-management.change-password");
+});
+
+
+
+Route::post("payment-listener", "User\TransactionsController@payherePaymentWebhook")->name("payment-listener");
+
+Route::fallback(function () {
+    abort(404);
 });

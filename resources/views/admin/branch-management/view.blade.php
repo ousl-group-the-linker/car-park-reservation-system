@@ -57,8 +57,7 @@
                     <div>
                         <a class="btn btn-light" href="{{ route('bookings-management') }}"><i
                                 class="bi bi-receipt me-2"></i>Booking Management</a>
-                        <a class="btn btn-light" href="{{ route('transactions-management') }}"><i
-                                class="bi bi-arrow-left-right me-2"></i>Transactions</a>
+
 
                         @if (Auth::user()->isSuperAdminAccount() || Auth::user()->isManagerAccount())
                             <a class="btn btn-light"

@@ -21,7 +21,7 @@
 
 @section('main-body')
     <div class="container">
-        <div class="p-0" style="max-width: 680px">
+        <div class="p-0">
             <div class="card">
                 <div class="card-header">
                     <h2 class="fs-5 m-0">Booking #{{ $booking->id }}</h2>
@@ -204,6 +204,45 @@
             </div>
         </div>
 
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-12">
+                    <h4>Transactions</h4>
+                </div>
+            </div>
+            @if ($booking->transactions->count() > 0)
+                @foreach ($booking->transactions as $transaction)
+                    <div class="row bg-white rounded border mt-2 py-2 align-items-center">
+                        <div class="col-3 d-flex flex-column">
+                            <span class="fw-lighter">Reference</span>
+                            <span>{{ $transaction->reference_id }}</span>
+                        </div>
+                        <div class="col-6 d-flex flex-column">
+                            <span class="fw-lighter">Date</span>
+                            <span>{{ $transaction->created_at->format('Y-m-d H:i A') }}</span>
+                        </div>
+                        <div class="col-3 d-flex flex-column">
+                            <span class="fw-lighter">Amount</span>
+                            <div>
+                                @if ($transaction->amount >= 0)
+                                    <span class="text-success me-2"><i class="bi bi-arrow-right"></i></span>
+                                @elseif($transaction->amount < 0)
+                                    <span class="text-danger me-2"><i class="bi bi-arrow-left"></i></span>
+                                @endif
+                                <span>Rs {{ number_format(abs($transaction->amount), 2) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @else
+                <div class="card d-flex justify-content-center align-items-center flex-column py-5 px-0">
+                    <img src="{{ asset('images/ilustrations/transfer_money.svg') }}" class="mb-5" alt="Empty Image"
+                        style="width:220px">
+                    <h3>Mmmm....</h3>
+                    <p class="m-0">This booking has not made any transactions yets.</p>
+                </div>
+            @endif
+        </div>
 
         @can('markAsCancelled', $booking)
             <div id="mark-as-cancelled" class="modal" tabindex="-1">

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\BookingTransaction;
 use App\Models\Branch;
 use App\Models\SriLankaDistrict;
+use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,7 +20,7 @@ class BookingsController extends Controller
 
     public function index(Request $request)
     {
-        $bookingStatus = $request->input("booking_status", 10);
+        $bookingStatus = $request->input("booking_status", -10);
         $bookingId = $request->input("booking", null);
 
         $bookings = Auth::user()
@@ -118,6 +120,13 @@ class BookingsController extends Controller
             "hourly_rate" => $branch->hourly_rate
         ]);
 
+        $booking->Transactions()->create([
+            "client_id" => Auth::user()->id,
+            'amount' => -$branch->hourly_rate * ($releaseDateTime->diffInHours($startDateTime)),
+            'status' => Transaction::$STATUS_SUCCESS,
+            'intent' => Transaction::$INTENT_BOOKING,
+        ]);
+
         return redirect()->route("my-bookings.view", ["booking" => $booking->id])
             ->with(["message" => "The booking has been successfully made."]);
     }
@@ -148,9 +157,13 @@ class BookingsController extends Controller
             $data->actual->fee = round(bcmul($booking->hourly_rate, $data->actual->hours, 4), 2);
         }
 
+
+        $transactions = $booking->Transactions;
+
         return view("user.bookings.booking", [
             "booking" => $booking,
-            "data" => $data
+            "data" => $data,
+            "transactions" => $transactions
         ]);
     }
 
@@ -160,6 +173,22 @@ class BookingsController extends Controller
 
         $booking->status = Booking::STATUS_CANCELLED;
         $booking->save();
+
+        $allocatedAmount = abs($booking->Transactions()
+            ->status(Transaction::$STATUS_SUCCESS)
+            ->intent(Transaction::$INTENT_BOOKING)
+            ->get()
+            ->sum("amount") ?? 0);
+
+
+        if ($allocatedAmount > 0) {
+            $booking->Transactions()->create([
+                "client_id" => Auth::user()->id,
+                'amount' => $allocatedAmount,
+                'status' => Transaction::$STATUS_SUCCESS,
+                'intent' => Transaction::$INTENT_BOOKING,
+            ]);
+        }
 
         return redirect()->route('my-bookings.view', ["booking" => $booking->id])
             ->with(["message" => "The booking is successfully cancelled."]);

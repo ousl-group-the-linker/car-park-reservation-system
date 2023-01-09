@@ -230,12 +230,8 @@
                     <div class="card d-flex justify-content-center align-items-center flex-column py-5">
                         <img src="{{ asset('images/ilustrations/feeling-blue.svg') }}" class="mb-4" alt="Empty Image"
                             style="width:220px">
-                        <h3>Ops....</h3>
-                        @if (request()->input('email') == null && request()->input('address_city') == null)
-                            <p class="m-0">No branch is found.</p>
-                        @else
-                            <p class="m-0">No branch is matching for your query.</p>
-                        @endif
+                        <h3>Mmmm...</h3>
+                        <p class="m-0">You have not reserved a parking space yet.</p>
                     </div>
                 @endif
             </div>

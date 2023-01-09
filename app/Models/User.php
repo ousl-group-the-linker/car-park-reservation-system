@@ -57,7 +57,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(SriLankaCity::class, "address_city_id");
     }
-    public function Bookings(){
+    public function Bookings()
+    {
         return $this->hasMany(Booking::class, "client_id");
     }
 
@@ -107,7 +108,34 @@ class User extends Authenticatable
         return $this->hasOne(Branch::class, "manager_id");
     }
 
-    public function WorkForBranch(){
+    public function WorkForBranch()
+    {
         return $this->belongsTo(Branch::class, "work_for_branch_id");
+    }
+
+    public function Transactions()
+    {
+        return $this->hasMany(Transaction::class, "client_id");
+    }
+    public function CurrentBalance()
+    {
+
+        return $this->Transactions()
+            ->status(Transaction::$STATUS_SUCCESS)
+            ->orderBy("id", "DESC")
+            ->first()->final_balance ?? 0;
+    }
+
+    public function OnHoldBalance()
+    {
+        return $this
+            ->Transactions()
+            ->status(Transaction::$STATUS_PENDING)
+            ->orderBy("id", "DESC")->get()->sum("amount") ?? 0;
+    }
+
+    public function AvailableBalance()
+    {
+        return $this->CurrentBalance() + $this->OnHoldBalance();
     }
 }

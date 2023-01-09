@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 class AdminHasBranch
 {
@@ -27,6 +28,10 @@ class AdminHasBranch
             return redirect()->route("auth.login");
         }
 
+        if(Route::is("branches-management")){
+            return $next($request);
+        }
+
         if (Auth::user()->isSuperAdminAccount()) {
             return $next($request);
         }
@@ -38,6 +43,6 @@ class AdminHasBranch
         }
 
 
-        return redirect()->route("admin.dashboard");
+        return redirect()->route("branches-management");
     }
 }

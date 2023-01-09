@@ -186,7 +186,7 @@
                                                 <div class="col-6 text-wrap">
                                                     <span class="fs-6 fw-light text-dark text-break">Hourly Rate</span>
                                                     <p class="m-0 text-dark mt-1 text-break">Rs
-                                                        {{ $booking->hourly_rate }}
+                                                        {{ number_format($booking->hourly_rate, 2) }}
                                                     </p>
                                                 </div>
                                             </div>

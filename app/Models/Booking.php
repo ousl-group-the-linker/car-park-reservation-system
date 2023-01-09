@@ -28,6 +28,7 @@ class Booking extends Model
      * @var array
      */
     protected $fillable = [
+        "booking_id",
         "client_id",
         "branch_id",
         "estimated_start_time",
@@ -35,7 +36,7 @@ class Booking extends Model
         "real_start_time",
         "real_end_time",
         "hourly_rate",
-        "status",
+        "status"
     ];
 
     /**
@@ -56,7 +57,7 @@ class Booking extends Model
         "estimated_end_time" => "datetime",
         "real_start_time" => "datetime",
         "real_end_time" => "datetime",
-        "hourly_rate" => "float"
+        "hourly_rate" => "float",
     ];
 
     public function Branch()
@@ -66,6 +67,10 @@ class Booking extends Model
     public function Client()
     {
         return $this->belongsTo(User::class, "client_id");
+    }
+    public function Transactions()
+    {
+        return $this->hasMany(Transaction::class, "booking_id");
     }
 
     public function isPending()
@@ -85,19 +90,23 @@ class Booking extends Model
         return $this->status === self::STATUS_FINISHED;
     }
 
-    public function scopeToday($query){
-        return $query->where(function($query){
+    public function scopeToday($query)
+    {
+        return $query->where(function ($query) {
             $query->whereDate("estimated_start_time", Carbon::now());
         });
     }
-    public function scopeOnGoing($query){
+    public function scopeOnGoing($query)
+    {
         return $query->where("status", self::STATUS_ONGOING);
     }
 
-    public function estimatedHours(){
+    public function estimatedHours()
+    {
         return $this->estimated_end_time->diffInHours($this->estimated_start_time);
     }
-    public function totalBookingHours(){
+    public function totalBookingHours()
+    {
         return $this->real_end_time->diffInHours($this->real_start_time);
     }
 

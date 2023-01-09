@@ -24,7 +24,7 @@
 @section('main-body')
     <div class="container">
         <div class="card" style="max-width: 620px">
-            <form novalidate action="{{ route('my-bookings.new') }}" method="post" id="new-booking-frm">
+            <form action="{{ route('my-bookings.new') }}" method="post" id="new-booking-frm">
                 @csrf
                 <div class="card-header">
                     Place Booking
@@ -119,7 +119,7 @@
                     </div>
                     <div class="form-check mt-4 mb-4">
                         <input class="form-check-input @error('i_agree') is-invalid @enderror" type="checkbox"
-                            name="i_agree" id="i_agree" value="1" @if(old('i_agree') != 0) checked @endif>
+                            name="i_agree" id="i_agree" value="1" @if (old('i_agree') != 0) checked @endif>
                         <label class="form-check-label" for="i_agree">
                             I agree that if I proceed further it will deduct the above-mentioned amount from my account.
                         </label>
@@ -130,7 +130,8 @@
                 </div>
 
                 <div class="card-footer d-flex justify-content-end">
-                    <a href="{{route('find-parking-lot')}}" class="btn btn-light me-2"><i class="bi bi-arrow-left-circle me-2"></i>Cancel</a>
+                    <a href="{{ route('find-parking-lot') }}" class="btn btn-light me-2"><i
+                            class="bi bi-arrow-left-circle me-2"></i>Cancel</a>
                     <button class="btn btn-primary"><i class="bi bi-building-add me-2"></i>Place Booking</button>
                 </div>
             </form>

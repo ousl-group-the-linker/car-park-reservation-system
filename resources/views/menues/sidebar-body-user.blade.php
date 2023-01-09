@@ -19,9 +19,14 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('find-parking-lot') }}"
-                class="nav-link text-dark d-flex align-items-center @if (request()->routeIs('find-parking-lot')) active @endif">
-                <i class="bi bi-display"></i>
+            <a href="{{ route('balance-and-recharge.transactions') }}"
+                class="nav-link text-dark d-flex align-items-center @if (
+                request()->routeIs('balance-and-recharge.transactions')
+                || request()->routeIs('balance-and-recharge.holds')
+                || request()->routeIs('balance-and-recharge.recharge')
+                || request()->routeIs('balance-and-recharge.recharge.confirm')
+                ) active @endif">
+                <i class="bi bi-wallet2"></i>
                 <span>Balance & Recharge</span>
             </a>
         </li>

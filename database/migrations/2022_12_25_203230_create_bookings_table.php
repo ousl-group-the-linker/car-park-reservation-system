@@ -28,6 +28,7 @@ class CreateBookingsTable extends Migration
             $table->double("hourly_rate", null, 2);
 
             $table->integer("status")->default(Booking::STATUS_PENDING);
+
             $table->timestamps();
         });
     }
