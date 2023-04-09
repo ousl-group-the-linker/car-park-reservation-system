@@ -62,6 +62,7 @@ class BookingsController extends Controller
     public function placeBooking(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            "vehicle_no" => "required|string",
             "branch_id" => "required|exists:branches,id",
             "arrivel_date" => "required|date_format:Y-m-d",
             "arrivel_time" => "required|date_format:H:i",
@@ -96,6 +97,16 @@ class BookingsController extends Controller
             if (!($releaseDateTime->isAfter($startDateTime) || $releaseDateTime->equalTo($startDateTime))) {
                 $validator->errors()->add("release_time", "The release time should be after arrival.");
             }
+
+            $estimatedDurationInHours = $startDateTime->diffInHours($releaseDateTime);
+
+            $branch = Branch::findorfail($data->branch_id);
+            $estimatedFee = round(bcmul($estimatedDurationInHours, $branch->hourly_rate, 4), 2);
+
+            if (Auth::user()->AvailableBalance() <= $estimatedFee) {
+                $estimatedFee = number_format($estimatedFee, 2, ".", ",");
+                $validator->errors()->add("account_balance", "Your account does not have enough credits to make this reservation. your account should have at least Rs {$estimatedFee}. please recharge and try again.");
+            }
         });
 
         if ($validator->fails()) {
@@ -112,6 +123,7 @@ class BookingsController extends Controller
         $releaseDateTime = Carbon::createFromFormat("Y-m-d H:i",  "{$data->release_date} {$data->release_time}");
 
         $booking = Booking::create([
+            "vehicle_no" => $data->vehicle_no,
             "client_id" => Auth::user()->id,
             "branch_id" => $branch->id,
             "estimated_start_time" => $startDateTime->format("Y-m-d H:i"),
@@ -123,7 +135,7 @@ class BookingsController extends Controller
         $booking->Transactions()->create([
             "client_id" => Auth::user()->id,
             'amount' => -$branch->hourly_rate * ($releaseDateTime->diffInHours($startDateTime)),
-            'status' => Transaction::$STATUS_SUCCESS,
+            'status' => Transaction::$STATUS_PENDING,
             'intent' => Transaction::$INTENT_BOOKING,
         ]);
 
@@ -137,6 +149,7 @@ class BookingsController extends Controller
         $data = (object)[];
 
         $data->estimate = (object)[];
+        $data->vehicle_no = $booking->vehicle_no;
         $data->estimate->start_at = $booking->estimated_start_time;
         $data->estimate->end_at = $booking->estimated_end_time;
         $data->estimate->hours = max(1, $data->estimate->end_at->diffInHours($data->estimate->start_at));
@@ -174,21 +187,9 @@ class BookingsController extends Controller
         $booking->status = Booking::STATUS_CANCELLED;
         $booking->save();
 
-        $allocatedAmount = abs($booking->Transactions()
-            ->status(Transaction::$STATUS_SUCCESS)
-            ->intent(Transaction::$INTENT_BOOKING)
-            ->get()
-            ->sum("amount") ?? 0);
-
-
-        if ($allocatedAmount > 0) {
-            $booking->Transactions()->create([
-                "client_id" => Auth::user()->id,
-                'amount' => $allocatedAmount,
-                'status' => Transaction::$STATUS_SUCCESS,
-                'intent' => Transaction::$INTENT_BOOKING,
-            ]);
-        }
+        $booking->Transactions()->update([
+            "status" => Transaction::$STATUS_REFUNDED,
+        ]);
 
         return redirect()->route('my-bookings.view', ["booking" => $booking->id])
             ->with(["message" => "The booking is successfully cancelled."]);

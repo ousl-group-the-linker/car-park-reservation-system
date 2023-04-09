@@ -43,7 +43,7 @@
                         <div class="row mb-2">
                             <div class="col-4">
                                 <span class="fw-lighter">Reservations</span>
-                                <p class="m-0">{{ $branch->reservedSlots }}</p>
+                                <p class="m-0">{{ $branch->reservedSlots()->count() }}</p>
                             </div>
                             <div class="col-4">
                                 <span class="fw-lighter">Capacity</span>
@@ -86,7 +86,7 @@
                 <div class="card-body">
                     <span class="d-block mb-2">{{ $branch->reservedSlots()->count() }} of {{ $branch->parking_slots }}
                         Booked
-                        ({{ ($branch->reservedSlots()->count() / $branch->parking_slots) * 100 }})</span>
+                        ({{ (int)(($branch->reservedSlots()->count() / $branch->parking_slots) * 100) }}%)</span>
                     <div class="progress">
                         <div class="progress-bar" role="progressbar"
                             aria-valuenow="{{ $branch->reservedSlots()->count() }}" aria-valuemin="0"

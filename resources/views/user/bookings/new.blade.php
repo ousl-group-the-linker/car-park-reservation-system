@@ -34,6 +34,12 @@
                     <p>You are about to place a booking to the following parking lot, please verify and fill in all the
                         fields correctly.</p>
 
+                    @error('account_balance')
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-currency-exchange me-2"></i>{{ $message }}
+                        </div>
+                    @enderror
+
                     <input type="hidden" name="branch_id" value="{{ $branch->id }}">
                     <div class="container">
                         <div class="row border py-2 px-3 rounded">
@@ -47,6 +53,24 @@
                                     {{ number_format($branch->hourly_rate, 2) }}</span>
                                 <span>Per Hour</span>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col">
+                            <label for="">
+                                Vehicle No
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col">
+                            <input type="text" name="vehicle_no"
+                                class="form-control @error('vehicle_no') is-invalid @enderror" placeholder="Vehicle No"
+                                aria-label="Vehicle No" value="{{ old('vehicle_no') }}" required>
+                            @error('vehicle_no')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
@@ -109,11 +133,11 @@
                             <div class="col d-flex flex-column">
                                 <span class="fw-light">Estimated Fee</span>
                                 <span class="hours">{{ old('total_hours', '-') }}</span>
-                                <input type="hidden" name="total_hours">
+                                <input type="hidden" name="total_hours" value="{{ old('total_hours', '-') }}">
                             </div>
                             <div class="col d-flex align-items-center justify-content-center">
                                 <span class="fs-2 fs-bold fee">{{ old('estimated_fee', '-') }}</span>
-                                <input type="hidden" name="estimated_fee">
+                                <input type="hidden" name="estimated_fee" value="{{ old('estimated_fee', '-') }}">
                             </div>
                         </div>
                     </div>
@@ -151,6 +175,7 @@
             let frm = $("#new-booking-frm");
             let estimatedFeeEl = frm.find(".estimated-fee");
 
+
             let estimatedArrivel = Date.parse(
                 `${frm.find("[name=arrivel_date]").val()} ${frm.find("[name=arrivel_time]").val()}`);
             let releaseArrivel = Date.parse(
@@ -172,6 +197,9 @@
 
             estimatedFeeEl.find("[name=total_hours]").val(hours);
             estimatedFeeEl.find("[name=estimated_fee]").val(fee);
+
+            estimatedFeeEl.find("[name=total_hours]").val(`${hours} Hours`);
+            estimatedFeeEl.find("[name=estimated_fee]").val(`Rs ${fee}/-`);
 
 
         }

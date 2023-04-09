@@ -12,6 +12,7 @@ class Transaction extends Model
     public static $STATUS_SUCCESS = "100";
     public static $STATUS_FAILED = "80";
     public static $STATUS_PENDING = "60";
+    public static $STATUS_REFUNDED = "-60";
     public static $STATUS_NONE = "-100";
 
     public static $INTENT_RELOAD = "60";
@@ -62,6 +63,10 @@ class Transaction extends Model
         return $this->status == Transaction::$STATUS_PENDING;
     }
 
+    public function scopeNotStatus($query, $status)
+    {
+        return $query->where("status", "!=", $status);
+    }
     public function scopeStatus($query, $status)
     {
         return $query->where("status", $status);

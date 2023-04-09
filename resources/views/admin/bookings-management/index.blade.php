@@ -66,11 +66,13 @@
                                 <div class="col-6 mb-3">
                                     <label for="city" class="form-label">Branch</label>
                                     <select class="form-select   @if ($errors->has('branch')) is-invalid @endif"
-                                        aria-label="Branch" name="branch" @if(Auth::user()->isManagerAccount() || Auth::user()->isCounterAccount()) disabled @endif>
+                                        aria-label="Branch" name="branch"
+                                        @if (Auth::user()->isManagerAccount() || Auth::user()->isCounterAccount()) disabled @endif>
                                         <option selected value="">Any</option>
                                         @foreach ($branches as $branch)
                                             <option value="{{ $branch->id }}"
-                                                @if (request()->get('branch', Auth::user()->WorkForBranch->id ?? Auth::user()->ManageBranch->id ?? null) == $branch->id) selected @endif>{{ $branch->name }}
+                                                @if (request()->get('branch', Auth::user()->WorkForBranch->id ?? (Auth::user()->ManageBranch->id ?? null)) ==
+                                                        $branch->id) selected @endif>{{ $branch->name }}
                                                 ({{ $branch->City->name }})
                                             </option>
                                         @endforeach
@@ -133,10 +135,10 @@
 
                                             <div
                                                 class="col-6 col-xl-4 mb-2 mb-xl-0 p-0 d-flex flex-column align-items-start">
-                                                <span class="fs-6 fw-light text-dark">Client</span>
+                                                <span class="fs-6 fw-light text-dark">Vehicle No</span>
                                                 <p class="m-0  mt-1">
-                                                    <a href="mailto:{{ $booking->Client->email }}"
-                                                        class="text-dark text-decoration-none">{{ $booking->Client->email }}</a>
+                                                    <a href="mailto:{{ $booking->vehicle_no }}"
+                                                        class="text-dark text-decoration-none">{{ $booking->vehicle_no }}</a>
                                                 </p>
                                             </div>
 
@@ -193,6 +195,15 @@
                                         @endif
                                         <div class="row">
                                             @if ($booking->isPending() || $booking->isCancelled())
+                                                <div class="col-12 col-sm-4 mb-xl-0 d-flex flex-column align-items-start">
+                                                    <span class="fs-6 fw-light text-dark">Client</span>
+                                                    <p class="m-0">
+                                                        {{ $booking->Client->email }}
+                                                    </p>
+                                                </div>
+
+
+
                                                 <div class="col-12 col-sm-3 mb-xl-0 d-flex flex-column align-items-start">
                                                     <span class="fs-6 fw-light text-dark">Starts At</span>
                                                     <p class="m-0">
@@ -207,6 +218,13 @@
                                                     </p>
                                                 </div>
                                             @elseif ($booking->isOnGoing())
+                                                <div class="col-12 col-sm-4 mb-xl-0 d-flex flex-column align-items-start">
+                                                    <span class="fs-6 fw-light text-dark">Client</span>
+                                                    <p class="m-0">
+                                                        {{ $booking->Client->email }}
+                                                    </p>
+                                                </div>
+
                                                 <div class="col-12 col-sm-3 mb-xl-0 d-flex flex-column align-items-start">
                                                     <span class="fs-6 fw-light text-dark">Starts At</span>
                                                     <p class="m-0">
@@ -222,8 +240,14 @@
                                                     </p>
                                                 </div>
                                             @elseif ($booking->isFinished())
-                                                <div
-                                                    class="col-12 col-sm-3  mb-xl-0 p-0 d-flex flex-column align-items-start">
+                                                <div class="col-12 col-sm-4 mb-xl-0 d-flex flex-column align-items-start">
+                                                    <span class="fs-6 fw-light text-dark">Client</span>
+                                                    <p class="m-0">
+                                                        {{ $booking->Client->email }}
+                                                    </p>
+                                                </div>
+
+                                                <div class="col-12 col-sm-3  mb-xl-0 p-0 d-flex flex-column align-items-start">
                                                     <span class="fs-6 fw-light text-dark">Starts At</span>
                                                     <p class="m-0">
                                                         {{ $booking->estimated_start_time->format('Y-m-d H:i A') }}
@@ -239,11 +263,11 @@
                                                 </div>
                                             @endif
 
-                                            <div class="col-12 col-sm-3"></div>
 
-                                            <div class="col-12 col-sm-3 mb-xl-0 d-flex flex-column align-items-end">
+                                            <div class="col-12 col-sm-2 mb-xl-0 d-flex flex-column align-items-end">
 
-                                                <a href="{{route('bookings-management.view', ['booking' => $booking->id])}}" target="_blank" class="btn btn-light"><i
+                                                <a href="{{ route('bookings-management.view', ['booking' => $booking->id]) }}"
+                                                    target="_blank" class="btn btn-light"><i
                                                         class="bi bi-arrow-up-right-circle-fill me-2"></i></i>View</a>
                                             </div>
                                         </div>
@@ -262,9 +286,9 @@
                         style="width:220px">
                     <h3>Ops....</h3>
                     @if (request()->input('email') == null && request()->input('address_city') == null)
-                        <p class="m-0">No branch is found.</p>
+                        <p class="m-0">No bookings is found.</p>
                     @else
-                        <p class="m-0">No branch is matching for your query.</p>
+                        <p class="m-0">No bookings is matching for your query.</p>
                     @endif
                 </div>
             @endif

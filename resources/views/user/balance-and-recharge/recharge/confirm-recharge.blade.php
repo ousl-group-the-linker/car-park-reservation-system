@@ -100,6 +100,7 @@
                     <input type="hidden" name="order_id" value="{{ $transaction->reference_id }}">
                     <input type="hidden" name="items" value="Account Recharge">
                     <input type="hidden" name="currency" value="{{ config('payhere.currency') }}">
+                    <input type="hidden" name="hash" value="{{ $hash }}">
 
                     <input type="hidden" name="address"
                         value="{{ join(",\n", array_filter([$data->address_line_1, $data->address_line_2, $data->address_line_3])) }}">

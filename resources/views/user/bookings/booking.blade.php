@@ -71,6 +71,15 @@
                             </div>
                         </div>
 
+
+                        <div class="row">
+                            <div class="col-6">
+                                <span class="d-flex align-middle">
+                                    <i class="bi bi-car-front-fill me-2"></i>Vehicle No</span>
+                                <p class="ps-4">{{ $data->vehicle_no }}</p>
+                            </div>
+                        </div>
+
                         <div class="row mt-5">
                             <div class="col-12">
                                 <span class="fw-bold d-flex mb-3">Estimate</span>

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Branch;
-use App\Models\SriLankaDistrict;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -63,6 +62,7 @@ class BookingsManagementController extends Controller
     {
         $data = (object)[];
 
+        $data->vehicle_no = $booking->vehicle_no;
         $data->estimate = (object)[];
         $data->estimate->start_at = $booking->estimated_start_time;
         $data->estimate->end_at = $booking->estimated_end_time;
@@ -97,6 +97,7 @@ class BookingsManagementController extends Controller
         $booking->real_start_time = Carbon::now();
         $booking->save();
 
+
         return redirect()->route("bookings-management.view", ["booking" => $booking->id])
             ->with(["message" => "The booking is successfully started."]);
     }
@@ -107,21 +108,9 @@ class BookingsManagementController extends Controller
         $booking->status = Booking::STATUS_CANCELLED;
         $booking->save();
 
-        $allocatedAmount = abs($booking->Transactions()
-            ->status(Transaction::$STATUS_SUCCESS)
-            ->intent(Transaction::$INTENT_BOOKING)
-            ->get()
-            ->sum("amount") ?? 0);
-
-
-        if ($allocatedAmount > 0) {
-            $booking->Transactions()->create([
-                "client_id" => $booking->Client->id,
-                'amount' => $allocatedAmount,
-                'status' => Transaction::$STATUS_SUCCESS,
-                'intent' => Transaction::$INTENT_BOOKING,
-            ]);
-        }
+        $booking->Transactions()->update([
+            "status" => Transaction::$STATUS_REFUNDED,
+        ]);
 
         return redirect()->route("bookings-management.view", ["booking" => $booking->id])
             ->with(["message" => "The booking is successfully cancelled."]);
@@ -133,6 +122,10 @@ class BookingsManagementController extends Controller
         $booking->status = Booking::STATUS_FINISHED;
         $booking->real_end_time = Carbon::now();
         $booking->save();
+
+        $booking->Transactions()->update([
+            "status" => Transaction::$STATUS_SUCCESS,
+        ]);
 
         $allocatedAmount = abs($booking->Transactions()
             ->status(Transaction::$STATUS_SUCCESS)

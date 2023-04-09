@@ -31,6 +31,7 @@ class Booking extends Model
         "booking_id",
         "client_id",
         "branch_id",
+        "vehicle_no",
         "estimated_start_time",
         "estimated_end_time",
         "real_start_time",

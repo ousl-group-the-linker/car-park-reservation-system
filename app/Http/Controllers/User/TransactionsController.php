@@ -20,7 +20,18 @@ class TransactionsController extends Controller
 
         $transactions = Auth::user()
             ->Transactions()
-            ->status(Transaction::$STATUS_SUCCESS);
+            ->notStatus(Transaction::$STATUS_NONE)
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->status(Transaction::$STATUS_SUCCESS);
+                });
+                $query->orWhere(function ($query) {
+                    $query->status(Transaction::$STATUS_FAILED);
+                });
+                $query->orWhere(function ($query) {
+                    $query->status(Transaction::$STATUS_REFUNDED);
+                });
+            });
 
         $transactions = $transactions->orderBy("created_at", "DESC")
             ->paginate(15);
@@ -83,8 +94,19 @@ class TransactionsController extends Controller
             'payhere_amount' => $data->amount
         ]);
 
+        $hash = strtoupper(
+            md5(
+                config('payhere.merchant_id') .
+                    $transaction->id .
+                    number_format($data->amount, 2, '.', '') .
+                    "LKR" .
+                    strtoupper(md5(config('payhere.merchant_secret')))
+            )
+        );
+
         return view("user.balance-and-recharge.recharge.confirm-recharge", [
             'data' => $data,
+            'hash' => $hash,
             'transaction' => $transaction
         ]);
     }
@@ -150,7 +172,7 @@ class TransactionsController extends Controller
     {
         $data = (object)[];
 
-        $data->onHold = Auth::user()->OnHoldBalance();
+        $data->onHold = abs(Auth::user()->OnHoldBalance());
 
         $data->currentBalance = Auth::user()->CurrentBalance();
 

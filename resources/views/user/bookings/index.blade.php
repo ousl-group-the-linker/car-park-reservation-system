@@ -37,7 +37,7 @@
                                     <label for="booking_id" class="form-label">Booking ID</label>
 
                                     <input type="text" class="form-control" name="booking"
-                                        placeholder="Search booking id" value="{{request()->get('booking')}}">
+                                        placeholder="Search booking id" value="{{ request()->get('booking') }}">
                                     @error('booking_id')
                                         <div class="invalid-feedback">
                                             {{ $message }}
@@ -115,7 +115,8 @@
                                                     <span class="fs-6 fw-light text-dark">Estimated Fee</span>
                                                     <p class="m-0 text-dark mt-1">
                                                         Rs {{ number_format($booking->estimatedFee(), 2, '.', '') }}
-                                                        (Allocated) </p>
+                                                        (Allocated)
+                                                    </p>
                                                 </div>
 
 
@@ -162,6 +163,12 @@
                                             @endif
                                             <div class="row">
                                                 @if ($booking->isPending() || $booking->isCancelled())
+                                                    <div class="col-12 col-sm-2 mb-xl-0 d-flex flex-column align-items-start">
+                                                        <span class="fs-6 fw-light text-dark">Vehicle No</span>
+                                                        <p class="m-0">
+                                                            {{ $booking->vehicle_no }}
+                                                        </p>
+                                                    </div>
                                                     <div class="col-12 col-sm-3 mb-xl-0 d-flex flex-column align-items-start">
                                                         <span class="fs-6 fw-light text-dark">Starts At</span>
                                                         <p class="m-0">
@@ -172,10 +179,16 @@
                                                     <div class="col-12 col-sm-3 mb-xl-0 d-flex flex-column align-items-start">
                                                         <span class="fs-6 fw-light text-dark">Ends At</span>
                                                         <p class="m-0">
-                                                            {{ $booking->estimated_start_time->format('Y-m-d H:i A') }}
+                                                            {{ $booking->estimated_end_time->format('Y-m-d H:i A') }}
                                                         </p>
                                                     </div>
                                                 @elseif ($booking->isOnGoing())
+                                                    <div class="col-12 col-sm-2 mb-xl-0 d-flex flex-column align-items-start">
+                                                        <span class="fs-6 fw-light text-dark">Vehicle No</span>
+                                                        <p class="m-0">
+                                                            {{ $booking->vehicle_no }}
+                                                        </p>
+                                                    </div>
                                                     <div class="col-12 col-sm-3 mb-xl-0 d-flex flex-column align-items-start">
                                                         <span class="fs-6 fw-light text-dark">Starts At</span>
                                                         <p class="m-0">
@@ -187,10 +200,17 @@
                                                         class="col-12 col-sm-3  mb-xl-0 p-0 d-flex flex-column align-items-start">
                                                         <span class="fs-6 fw-light text-dark">Ends At</span>
                                                         <p class="m-0">
-                                                            {{ $booking->estimated_start_time->format('Y-m-d H:i A') }}
+                                                            {{ $booking->estimated_end_time->format('Y-m-d H:i A') }}
                                                         </p>
                                                     </div>
                                                 @elseif ($booking->isFinished())
+                                                    <div class="col-12 col-sm-2 mb-xl-0 d-flex flex-column align-items-start">
+                                                        <span class="fs-6 fw-light text-dark">Vehicle No</span>
+                                                        <p class="m-0">
+                                                            {{ $booking->vehicle_no }}
+                                                        </p>
+                                                    </div>
+
                                                     <div
                                                         class="col-12 col-sm-3  mb-xl-0 p-0 d-flex flex-column align-items-start">
                                                         <span class="fs-6 fw-light text-dark">Starts At</span>
@@ -203,14 +223,14 @@
                                                         class="col-12 col-sm-3  mb-xl-0 p-0 d-flex flex-column align-items-start">
                                                         <span class="fs-6 fw-light text-dark">Ends At</span>
                                                         <p class="m-0">
-                                                            {{ $booking->estimated_start_time->format('Y-m-d H:i A') }}
+                                                            {{ $booking->estimated_end_time->format('Y-m-d H:i A') }}
                                                         </p>
                                                     </div>
                                                 @endif
 
-                                                <div class="col-12 col-sm-3"></div>
+                                                <div class="col-12 col-sm-2"></div>
 
-                                                <div class="col-12 col-sm-3 mb-xl-0 d-flex flex-column align-items-end">
+                                                <div class="col-12 col-sm-2 mb-xl-0 d-flex flex-column align-items-end">
 
                                                     <a href="{{ route('my-bookings.view', ['booking' => $booking->id]) }}"
                                                         target="_blank" class="btn btn-light"><i

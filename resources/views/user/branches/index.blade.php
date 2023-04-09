@@ -92,8 +92,8 @@
             @foreach ($branches as $branch)
                 <div class="col-12 col-md-4 branch">
                     <div class="d-flex flex-column bg-white rounded p-4 border mb-4">
-                        <h3 class="text-truncate-container max-lines-2">{{ $branch->name }}
-                            #{{ $branch->id }}</h3>
+                        <h3 class="text-truncate-container max-lines-2">
+                            #{{ $branch->id }} - {{ $branch->name }}</h3>
 
                         <p><i class="bi bi-geo-alt-fill me-2"></i>{{ $branch->address_text }}</p>
 

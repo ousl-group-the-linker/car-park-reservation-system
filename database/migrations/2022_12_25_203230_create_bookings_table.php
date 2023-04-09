@@ -19,6 +19,8 @@ class CreateBookingsTable extends Migration
             $table->unsignedBigInteger("client_id");
             $table->unsignedBigInteger("branch_id");
 
+            $table->string("vehicle_no");
+
             $table->dateTime("estimated_start_time");
             $table->dateTime("estimated_end_time");
 
