@@ -33,6 +33,8 @@ Route::get('/', function () {
         }
     } else if (Auth::user()->isUserAccount()) {
         return redirect()->route("find-parking-lot");
+    } else {
+        abort(404);
     }
 })->middleware("auth")->name("home");
 
