@@ -55,7 +55,8 @@ class Branch extends Model
         return $this->hasMany(User::class, "work_for_branch_id");
     }
 
-    public function Bookings(){
+    public function Bookings()
+    {
         return $this->hasMany(Booking::class, "branch_id");
     }
 
@@ -74,7 +75,15 @@ class Branch extends Model
 
     public function reservedSlots()
     {
-        return $this->Bookings()->today()->onGoing();
+        return $this->Bookings()->today()
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->onGoing();
+                });
+                $query->orWhere(function ($query) {
+                    $query->pending();
+                });
+            });
     }
     public function reservedPersentage()
     {

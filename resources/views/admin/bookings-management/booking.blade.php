@@ -13,7 +13,7 @@
                 <li class="breadcrumb-item active" aria-current="page">
                     <a href="{{route('bookings-management')}}" class="text-decoration-none text-dark">Bookings</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">Booking #{{ $booking->id }}</li>
+                <li class="breadcrumb-item active" aria-current="page">Booking #{{ $booking->reference_id }}</li>
             </ol>
         </nav>
     </div>
@@ -24,7 +24,7 @@
         <div class="p-0">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="fs-5 m-0">Booking #{{ $booking->id }}</h2>
+                    <h2 class="fs-5 m-0">Booking #{{ $booking->reference_id }}</h2>
                 </div>
                 @if (session()->has('message'))
                     <div class="alert alert-info alert-dismissible fade show mx-2 mt-2" role="alert">
@@ -266,7 +266,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-                            <form action="{{ route('bookings-management.mark-as-cancelled', ['booking' => $booking->id]) }}"
+                            <form action="{{ route('bookings-management.mark-as-cancelled', ['booking' => $booking->reference_id]) }}"
                                 method="post">
                                 @csrf
                                 <button type="submit" class="btn btn-primary">Yes</button>
@@ -291,7 +291,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-                            <form action="{{ route('bookings-management.mark-as-ongoing', ['booking' => $booking->id]) }}"
+                            <form action="{{ route('bookings-management.mark-as-ongoing', ['booking' => $booking->reference_id]) }}"
                                 method="post">
                                 @csrf
                                 <button type="submit" class="btn btn-primary">Yes</button>
@@ -316,7 +316,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-                            <form action="{{ route('bookings-management.mark-as-finished', ['booking' => $booking->id]) }}"
+                            <form action="{{ route('bookings-management.mark-as-finished', ['booking' => $booking->reference_id]) }}"
                                 method="post">
                                 @csrf
                                 <button type="submit" class="btn btn-primary">Yes</button>

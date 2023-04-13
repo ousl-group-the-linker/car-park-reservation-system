@@ -119,10 +119,10 @@
                 <div class="accordion " id="accordionExample">
                     @foreach ($bookings as $booking)
                         <div class="accordion-item mb-2 ">
-                            <h2 class="accordion-header" id="booking-{{ $booking->id }}">
+                            <h2 class="accordion-header" id="booking-{{ $booking->reference_id }}">
                                 <div class="accordion-button bg-white" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collaps-{{ $booking->id }}" aria-expanded="false"
-                                    aria-controls="collaps-{{ $booking->id }}">
+                                    data-bs-target="#collaps-{{ $booking->reference_id }}" aria-expanded="false"
+                                    aria-controls="collaps-{{ $booking->reference_id }}">
 
 
                                     <div class="container">
@@ -130,7 +130,7 @@
                                             <div
                                                 class="col-6 col-xl-2 mb-2 mb-xl-0 p-0 d-flex flex-column align-items-start">
                                                 <span class="fs-6 fw-light text-dark text-dark">ID</span>
-                                                <p class="m-0 text-dark mt-1">#{{ $booking->id }}</p>
+                                                <p class="m-0 text-dark mt-1">#{{ $booking->reference_id }}</p>
                                             </div>
 
                                             <div
@@ -169,8 +169,8 @@
                                     </div>
                                 </div>
                             </h2>
-                            <div id="collaps-{{ $booking->id }}" class="accordion-collapse collapse"
-                                aria-labelledby="booking-{{ $booking->id }}" data-bs-parent="#accordionExample">
+                            <div id="collaps-{{ $booking->reference_id }}" class="accordion-collapse collapse"
+                                aria-labelledby="booking-{{ $booking->reference_id }}" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <div class="container">
                                         @if (Auth::user()->isSuperAdminAccount())
@@ -266,7 +266,7 @@
 
                                             <div class="col-12 col-sm-2 mb-xl-0 d-flex flex-column align-items-end">
 
-                                                <a href="{{ route('bookings-management.view', ['booking' => $booking->id]) }}"
+                                                <a href="{{ route('bookings-management.view', ['booking' => $booking->reference_id]) }}"
                                                     target="_blank" class="btn btn-light"><i
                                                         class="bi bi-arrow-up-right-circle-fill me-2"></i></i>View</a>
                                             </div>

@@ -60,6 +60,8 @@
                                     <span>{{ $transaction->created_at->format('Y-m-d H:i A') }}</span>
                                 </div>
                                 <div class="col-3 d-flex flex-column">
+                                </div>
+                                <div class="col-3 d-flex flex-column">
                                     <span class="fw-lighter">Amount</span>
                                     <div>
                                         @if ($transaction->amount >= 0)
@@ -70,10 +72,7 @@
                                         <span>Rs {{ number_format(abs($transaction->amount), 2) }}</span>
                                     </div>
                                 </div>
-                                <div class="col-3 d-flex flex-column">
-                                    <span class="fw-lighter">Balance</span>
-                                    <span>Rs {{ number_format($transaction->final_balance, 2) }}</span>
-                                </div>
+
                             </div>
                         @endforeach
                         <div class="d-flex justify-content-end mt-2">

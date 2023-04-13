@@ -97,9 +97,9 @@ class TransactionsController extends Controller
         $hash = strtoupper(
             md5(
                 config('payhere.merchant_id') .
-                    $transaction->id .
+                    $transaction->reference_id .
                     number_format($data->amount, 2, '.', '') .
-                    "LKR" .
+                    config("payhere.currency") .
                     strtoupper(md5(config('payhere.merchant_secret')))
             )
         );

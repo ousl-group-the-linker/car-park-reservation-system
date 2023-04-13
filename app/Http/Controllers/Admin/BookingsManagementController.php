@@ -7,16 +7,21 @@ use App\Models\Booking;
 use App\Models\Branch;
 use App\Models\Transaction;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BookingsManagementController extends Controller
 {
+    /**
+     * Show all bookings
+     */
     public function index(Request $request)
     {
 
         $data = (object)$request->validate([
-            "booking_id" => "nullable|string",
+            "booking_reference_id" => "nullable|string",
             "branch" => "nullable|string",
             "email" => "nullable|string",
             "status" => "nullable|string",
@@ -37,8 +42,8 @@ class BookingsManagementController extends Controller
                 $query->where("email", trim($data->email));
             });
         }
-        if (($data->booking_id ?? NULL) != null) {
-            $bookings->where("id", "like", "%" . $data->booking_id . "%");
+        if (($data->booking_reference_id ?? NULL) != null) {
+            $bookings->where("reference_id", "=", $data->booking_reference_id);
         }
 
         if (Auth::user()->isManagerAccount()) {
@@ -58,6 +63,10 @@ class BookingsManagementController extends Controller
             "statuses" => $statuses,
         ]);
     }
+
+    /**
+     * Show the given booking
+     */
     public function view(Booking $booking, Request $request)
     {
         $data = (object)[];
@@ -89,6 +98,10 @@ class BookingsManagementController extends Controller
             "data" => $data
         ]);
     }
+
+    /**
+     * Change the given booking's status to ongoing.
+     */
     public function markAsOnGoing(Booking $booking, Request $request)
     {
         $this->authorize("markAsOnGoing", $booking);
@@ -98,9 +111,14 @@ class BookingsManagementController extends Controller
         $booking->save();
 
 
-        return redirect()->route("bookings-management.view", ["booking" => $booking->id])
+        return redirect()->route("bookings-management.view", ["booking" => $booking->reference_id])
             ->with(["message" => "The booking is successfully started."]);
     }
+
+
+    /**
+     * Change the given booking's status to cancelled
+     */
     public function markAsCancelled(Booking $booking, Request $request)
     {
         $this->authorize("markAsCancelled", $booking);
@@ -108,45 +126,61 @@ class BookingsManagementController extends Controller
         $booking->status = Booking::STATUS_CANCELLED;
         $booking->save();
 
+        //refund allocated amount
         $booking->Transactions()->update([
             "status" => Transaction::$STATUS_REFUNDED,
         ]);
 
-        return redirect()->route("bookings-management.view", ["booking" => $booking->id])
+        return redirect()->route("bookings-management.view", ["booking" => $booking->reference_id])
             ->with(["message" => "The booking is successfully cancelled."]);
     }
+
+    /**
+     * Change the given booking's status to finished
+     */
     public function markAsFinished(Booking $booking, Request $request)
     {
         $this->authorize("markAsFinished", $booking);
 
-        $booking->status = Booking::STATUS_FINISHED;
-        $booking->real_end_time = Carbon::now();
-        $booking->save();
+        try {
+            DB::beginTransaction();
 
-        $booking->Transactions()->update([
-            "status" => Transaction::$STATUS_SUCCESS,
-        ]);
+            $booking->status = Booking::STATUS_FINISHED;
+            $booking->real_end_time = Carbon::now();
+            $booking->save();
 
-        $allocatedAmount = abs($booking->Transactions()
-            ->status(Transaction::$STATUS_SUCCESS)
-            ->intent(Transaction::$INTENT_BOOKING)
-            ->get()
-            ->sum("amount") ?? 0);
+            //charge the allocated & estimated amount.
+            foreach ($booking->Transactions as $transaction) {
+                $transaction->status = Transaction::$STATUS_SUCCESS;
+                $transaction->save();
+            }
 
-        $realAmount = $booking->hourly_rate * max(1, $booking->real_end_time->diffInHours($booking->real_start_time));
 
-        $extraAmount = $allocatedAmount - $realAmount;
+            $allocatedAmount = abs($booking->Transactions()
+                ->status(Transaction::$STATUS_SUCCESS)
+                ->intent(Transaction::$INTENT_BOOKING)
+                ->get()
+                ->sum("amount") ?? 0);
+            $realAmount = $booking->hourly_rate * max(1, $booking->real_end_time->diffInHours($booking->real_start_time));
 
-        if (abs($extraAmount) > 0) {
-            $booking->Transactions()->create([
-                "client_id" => $booking->Client->id,
-                'amount' => $extraAmount,
-                'status' => Transaction::$STATUS_SUCCESS,
-                'intent' => Transaction::$INTENT_BOOKING,
-            ]);
+            //create a new transaction for settle the excess amount from user.
+            $extraAmount = $allocatedAmount - $realAmount;
+            if (abs($extraAmount) > 0) {
+                $booking->Transactions()->create([
+                    "client_id" => $booking->Client->id,
+                    'amount' => $extraAmount,
+                    'status' => Transaction::$STATUS_SUCCESS,
+                    'intent' => Transaction::$INTENT_BOOKING,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route("bookings-management.view", ["booking" => $booking->reference_id])
+                ->with(["message" => "The booking is successfully finished."]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            abort(500, "Something was wrong, please try again.");
         }
-
-        return redirect()->route("bookings-management.view", ["booking" => $booking->id])
-            ->with(["message" => "The booking is successfully finished."]);
     }
 }

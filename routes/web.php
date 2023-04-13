@@ -87,10 +87,10 @@ Route::group(["middleware" => ["auth.role:super-admin,manager,counter", "auth.ad
 
 
     Route::get("bookings-management", "Admin\BookingsManagementController@index")->name("bookings-management");
-    Route::get("bookings-management/{booking}", "Admin\BookingsManagementController@view")->name("bookings-management.view");
-    Route::post("bookings-management/{booking}/mark-as-ongoing", "Admin\BookingsManagementController@markAsOnGoing")->name("bookings-management.mark-as-ongoing");
-    Route::post("bookings-management/{booking}/mark-as-cancelled", "Admin\BookingsManagementController@markAsCancelled")->name("bookings-management.mark-as-cancelled");
-    Route::post("bookings-management/{booking}/mark-as-finished", "Admin\BookingsManagementController@markAsFinished")->name("bookings-management.mark-as-finished");
+    Route::get("bookings-management/{booking:reference_id}", "Admin\BookingsManagementController@view")->name("bookings-management.view");
+    Route::post("bookings-management/{booking:reference_id}/mark-as-ongoing", "Admin\BookingsManagementController@markAsOnGoing")->name("bookings-management.mark-as-ongoing");
+    Route::post("bookings-management/{booking:reference_id}/mark-as-cancelled", "Admin\BookingsManagementController@markAsCancelled")->name("bookings-management.mark-as-cancelled");
+    Route::post("bookings-management/{booking:reference_id}/mark-as-finished", "Admin\BookingsManagementController@markAsFinished")->name("bookings-management.mark-as-finished");
 
 
 
@@ -117,8 +117,8 @@ Route::group(["middleware" => "auth.role:user"], function () {
     Route::get("/my-bookings/place-booking", "User\BookingsController@new")->name("my-bookings.new");
     Route::post("/my-bookings/place-booking", "User\BookingsController@placeBooking");
 
-    Route::get("/my-bookings/{booking}", "User\BookingsController@view")->name("my-bookings.view");
-    Route::post("/my-bookings/{booking}/mark-as-cancelled", "User\BookingsController@markAsCancelled")->name("my-bookings.cancel");
+    Route::get("/my-bookings/{booking:reference_id}", "User\BookingsController@view")->name("my-bookings.view");
+    Route::post("/my-bookings/{booking:reference_id}/mark-as-cancelled", "User\BookingsController@markAsCancelled")->name("my-bookings.cancel");
 
     Route::get("balance-and-recharge/transactions", "User\TransactionsController@allTransactions")->name("balance-and-recharge.transactions");
     Route::get("balance-and-recharge/holds", "User\TransactionsController@allHolds")->name("balance-and-recharge.holds");

@@ -28,7 +28,7 @@ class Booking extends Model
      * @var array
      */
     protected $fillable = [
-        "booking_id",
+        "reference_id",
         "client_id",
         "branch_id",
         "vehicle_no",
@@ -96,6 +96,10 @@ class Booking extends Model
         return $query->where(function ($query) {
             $query->whereDate("estimated_start_time", Carbon::now());
         });
+    }
+    public function scopePending($query)
+    {
+        return $query->where("status", self::STATUS_PENDING);
     }
     public function scopeOnGoing($query)
     {

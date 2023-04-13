@@ -34,11 +34,19 @@
                     <p>You are about to place a booking to the following parking lot, please verify and fill in all the
                         fields correctly.</p>
 
+
+                    @if (session()->has('error-message'))
+                        <div class="alert alert-danger" role="alert">
+                            {{ session()->get('error-message') }}
+                        </div>
+                    @endif
                     @error('account_balance')
                         <div class="alert alert-danger" role="alert">
                             <i class="bi bi-currency-exchange me-2"></i>{{ $message }}
                         </div>
                     @enderror
+
+
 
                     <input type="hidden" name="branch_id" value="{{ $branch->id }}">
                     <div class="container">
@@ -143,7 +151,8 @@
                     </div>
                     <div class="form-check mt-4 mb-4">
                         <input class="form-check-input @error('i_agree') is-invalid @enderror" type="checkbox"
-                            name="i_agree" id="i_agree" value="1" @if (old('i_agree') != 0) checked @endif>
+                            name="i_agree" id="i_agree" value="1"
+                            @if (old('i_agree') != 0) checked @endif>
                         <label class="form-check-label" for="i_agree">
                             I agree that if I proceed further it will deduct the above-mentioned amount from my account.
                         </label>

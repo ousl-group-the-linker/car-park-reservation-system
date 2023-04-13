@@ -13,7 +13,7 @@
                 <li class="breadcrumb-item active" aria-current="page">
                     <a href="{{ route('my-bookings') }}" class="text-decoration-none text-dark">My Bookings</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">Booking #{{ $booking->id }}</li>
+                <li class="breadcrumb-item active" aria-current="page">Booking #{{ $booking->reference_id }}</li>
             </ol>
         </nav>
     </div>
@@ -25,7 +25,7 @@
         <div class="p-0">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="fs-5 m-0">Booking #{{ $booking->id }}</h2>
+                    <h2 class="fs-5 m-0">Booking #{{ $booking->reference_id }}</h2>
                 </div>
                 @if (session()->has('message'))
                     <div class="alert alert-info alert-dismissible fade show mx-2 mt-2" role="alert">
@@ -257,7 +257,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-                            <form action="{{ route('my-bookings.cancel', ['booking' => $booking->id]) }}" method="post">
+                            <form action="{{ route('my-bookings.cancel', ['booking' => $booking->reference_id]) }}" method="post">
                                 @csrf
                                 <button type="submit" class="btn btn-primary">Yes</button>
                             </form>

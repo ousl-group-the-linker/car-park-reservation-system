@@ -12,6 +12,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -55,7 +56,12 @@ class BookingsController extends Controller
 
         if (!$branch) return redirect()->route('find-parking-lot');
 
+        $policyStatus = Gate::inspect("canPlaceABooking", $branch);
+
+
+
         return view("user.bookings.new", [
+            "policyStatus" => $policyStatus,
             "branch" => $branch
         ]);
     }
@@ -118,6 +124,13 @@ class BookingsController extends Controller
         $data = (object)$validator->validated();
 
         $branch = Branch::findorfail($data->branch_id);
+        $policyStatus = Gate::inspect("canPlaceABooking", $branch);
+
+        if ($policyStatus->denied()) {
+            return redirect()->route("my-bookings.new", ['branch' => $request->input("branch_id")])
+                ->withInput($request->all())
+                ->with(["error-message" => $policyStatus->message()]);
+        }
 
         $startDateTime = Carbon::createFromFormat("Y-m-d H:i",  "{$data->arrivel_date} {$data->arrivel_time}");
         $releaseDateTime = Carbon::createFromFormat("Y-m-d H:i",  "{$data->release_date} {$data->release_time}");
@@ -139,7 +152,7 @@ class BookingsController extends Controller
             'intent' => Transaction::$INTENT_BOOKING,
         ]);
 
-        return redirect()->route("my-bookings.view", ["booking" => $booking->id])
+        return redirect()->route("my-bookings.view", ["booking" => $booking->reference_id])
             ->with(["message" => "The booking has been successfully made."]);
     }
 
@@ -191,7 +204,7 @@ class BookingsController extends Controller
             "status" => Transaction::$STATUS_REFUNDED,
         ]);
 
-        return redirect()->route('my-bookings.view', ["booking" => $booking->id])
+        return redirect()->route('my-bookings.view', ["booking" => $booking->reference_id])
             ->with(["message" => "The booking is successfully cancelled."]);
     }
 }

@@ -88,11 +88,11 @@
                     <input type="hidden" name="merchant_id" value="{{ config('payhere.merchant_id') }}">
 
                     <input type="hidden" name="return_url" value="{{ route('balance-and-recharge.recharge.status') }}">
-                    <input type="hidden" name="cancel_url" value="{{ route('balance-and-recharge.recharge.status') }}">
+                    <input type="hidden" name="cancel_url" value="{{ route('balance-and-recharge.recharge') }}">
 
                     @if (config('payhere.env') == 'test')
                         <input type="hidden" name="notify_url"
-                            value="{{config('payhere.test_notifiaction_tunnel')}}{{ route('payment-listener', [], false) }}">
+                            value="{{ config('payhere.test_notifiaction_tunnel') }}{{ route('payment-listener', [], false) }}">
                     @else
                         <input type="hidden" name="notify_url" value="{{ route('payment-listener') }}">
                     @endif

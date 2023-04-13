@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 class BranchPolicy
 {
@@ -95,5 +96,35 @@ class BranchPolicy
     public function forceDelete(User $user, Branch $branch)
     {
         return false;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Determine whether a booking can place for the branch
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Branch  $branch
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function canPlaceABooking(User $user, Branch $branch)
+    {
+        if (($branch->reservedSlots()->count() + 1) > $branch->parking_slots) {
+            return Response::deny("Failed to place the booking, This parking lot is already at its maximum capacity.");
+        } else {
+            return Response::allow();
+        }
     }
 }
