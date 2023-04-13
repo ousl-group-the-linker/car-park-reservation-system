@@ -19,8 +19,6 @@ class BranchManegementController extends Controller
 {
     public function index(Request $request)
     {
-        $this->authorize("viewAny", User::class);
-
         $data = (object)$request->validate([
             "email" => "nullable|email",
             "address_city" => "nullable",
@@ -231,8 +229,6 @@ class BranchManegementController extends Controller
 
     public function showAdminAccounts(Branch $branch, Request $request)
     {
-        $this->authorize("viewAny", User::class);
-
         $data = (object)$request->validate([
             "email" => "nullable|email"
         ]);
@@ -342,7 +338,7 @@ class BranchManegementController extends Controller
      */
     public function editAdmin(Branch $branch, User $admin, Request $request)
     {
-        $this->authorize("view", $admin);
+        $this->authorize("update", $admin);
 
         $roles = [
             User::$ROLE_MANAGER => "Manager",

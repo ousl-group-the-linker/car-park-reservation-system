@@ -26,13 +26,7 @@
                 <span>Bookings Management</span>
             </a>
         </li>
-        <li>
-            <a href="{{ route('transactions-management') }}"
-                class="nav-link text-dark d-flex align-items-center @if (request()->routeIs('transactions-management')) active @endif">
-                <i class="bi bi-plus-slash-minus"></i>
-                <span>Transactions</span>
-            </a>
-        </li>
+
         <li>
             <a href="{{ route('super-admin.admin-management') }}"
                 class="nav-link text-dark d-flex align-items-center

@@ -87,6 +87,7 @@ class UserPolicy
                 && (($model->WorkForBranch->id ?? null)  == ($user->ManageBranch->id ?? null));
         }
 
+
         return false;
     }
 

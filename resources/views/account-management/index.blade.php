@@ -1,16 +1,8 @@
 @extends('layouts.side-bar')
+@include('common.side-bar.side-bar')
 
 @section('sidebar-body')
-    @if (Auth::user()->isSuperAdminAccount())
-        @include('menues.sidebar-body-super-admin')
-        @yield('sidebar-body-super-admin')
-    @elseif(Auth::user()->isManagerAccount())
-        @include('menues.sidebar-body-admin')
-        @yield('sidebar-body-admin')
-    @elseif(Auth::user()->isCounterAccount())
-        @include('menues.sidebar-body-user')
-        @yield('sidebar-body-user')
-    @endif
+    @yield('common-side-bar')
 @endsection
 
 @section('main-header')
@@ -57,7 +49,7 @@
                         @endif
                     </div>
                     <div class="mb-3">
-                        <label for="last_name" class="form-label">First Name</label>
+                        <label for="last_name" class="form-label">Last Name</label>
                         <input type="text" class="form-control  @if ($errors->profileUpdate->has('last_name')) is-invalid @endif"
                             id="last_name" name="last_name" placeholder="Perera"
                             value="{{ old('last_name', Auth::user()->last_name) }}">

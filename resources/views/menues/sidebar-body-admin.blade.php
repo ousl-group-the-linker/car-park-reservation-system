@@ -1,16 +1,10 @@
 @section('sidebar-body-admin')
     <ul class="nav nav-pills flex-column mb-auto">
 
-        @if (isset(Auth::user()->ManageBranch->id))
+        @if (isset(Auth::user()->ManageBranch->id) || isset(Auth::user()->WorkForBranch->id))
+
             <li>
-                <a href="{{ route('admin.dashboard') }}"
-                    class="nav-link text-dark d-flex align-items-center @if (request()->routeIs('super-admin.dashboard')) active @endif">
-                    <i class="bi bi-display"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('branches-management.view', [Auth::user()->ManageBranch->id]) }}"
+                <a href="{{ route('branches-management.view', [Auth::user()->ManageBranch->id ?? Auth::user()->WorkForBranch->id]) }}"
                     class="nav-link text-dark d-flex align-items-center
                     @if (
                     request()->routeIs('branches-management') ||
@@ -23,21 +17,19 @@
             </li>
             <li>
                 <a href="{{ route('bookings-management') }}"
-                    class="nav-link text-dark d-flex align-items-center @if (request()->routeIs('bookings-management')) active @endif">
+                    class="nav-link text-dark d-flex align-items-center @if (
+                        request()->routeIs('bookings-management') ||
+                        request()->routeIs('bookings-management') ||
+                        request()->routeIs('bookings-management.view')
+                        ) active @endif">
                     <i class="bi bi-receipt"></i>
                     <span>Bookings Management</span>
                 </a>
             </li>
-            <li>
-                <a href="{{ route('transactions-management') }}"
-                    class="nav-link text-dark d-flex align-items-center @if (request()->routeIs('transactions-management')) active @endif">
-                    <i class="bi bi-plus-slash-minus"></i>
-                    <span>Transactions</span>
-                </a>
-            </li>
+
 
             <li>
-                <a href="{{ route('branches-management.admin-management', ['branch' => Auth::user()->ManageBranch->id]) }}"
+                <a href="{{ route('branches-management.admin-management', ['branch' => Auth::user()->ManageBranch->id ?? Auth::user()->WorkForBranch->id]) }}"
                     class="nav-link text-dark d-flex align-items-center
                 @if (request()->routeIs('branches-management.admin-management') ||
                     request()->routeIs('branches-management.admin-management.new') ||

@@ -145,7 +145,8 @@
                 <input type="hidden" name="manager_email"
                     @if ($hasOldManager) value="{{ old('manager_email', $email) }}" @endif>
 
-                <div class="selected d-flex @if (!$hasOldManager) d-none @endif align-items-center px-3 py-2">
+                <div
+                    class="selected d-flex @if (!$hasOldManager) d-none @endif align-items-center px-3 py-2">
                     <div class="flex-grow-1 me-3">
                         <p class="m-0 name">{{ old('manager_name', $name) }}</p>
                         <p class="m-0"><small class="email">{{ old('manager_email', $email) }}</small></p>
@@ -180,17 +181,23 @@
 
     </div>
     <div class="card-footer d-flex justify-content-between">
-        <a href="{{ route('branches-management') }}" class="btn btn-light me-2"><i
-                class="bi bi-arrow-left-circle me-1"></i>Back</a>
-
+        @if (isset($branch))
+            <a href="{{ route('branches-management.view', ['branch' => $branch->id]) }}" class="btn btn-light me-2"><i
+                    class="bi bi-arrow-left-circle me-1"></i>Back</a>
+        @else
+            @if (Auth::user()->isSuperAdminAccount())
+                <a href="{{ route('branches-management') }}"
+                    class="btn btn-light me-2"><i class="bi bi-arrow-left-circle me-1"></i>Back</a>
+            @endif
+        @endif
         <div class="d-flex flex-row">
             @if (isset($branch))
-            <a href="{{ route('branches-management.edit', ['branch' => $branch->id]) }}" class="btn btn-light me-2"><i
-                    class="bi bi-arrow-clockwise me-1"></i>Reset</a>
-                    <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Update</button>
-                    @else
-                    <a href="{{ route('branches-management.new') }}" class="btn btn-light me-2"><i
-                            class="bi bi-arrow-clockwise me-1"></i>Reset</a>
+                <a href="{{ route('branches-management.edit', ['branch' => $branch->id]) }}"
+                    class="btn btn-light me-2"><i class="bi bi-arrow-clockwise me-1"></i>Reset</a>
+                <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Update</button>
+            @else
+                <a href="{{ route('branches-management.new') }}" class="btn btn-light me-2"><i
+                        class="bi bi-arrow-clockwise me-1"></i>Reset</a>
                 <button class="btn btn-primary"><i class="bi bi-plus-square me-1"></i></i>Create</button>
             @endif
         </div>
@@ -254,32 +261,31 @@
     </div>
 
     @push('foot')
-    <script>
+        <script>
+            $("#search-managers-frm").on("submit", function(e) {
+                e.preventDefault();
 
-        $("#search-managers-frm").on("submit", function(e) {
-            e.preventDefault();
+                $("#managers-container").html("");
+                $("#first-screen").removeClass("d-none");
+                $("#managers-container").addClass("d-none");
+                $("#no-results-screen").addClass("d-none");
 
-            $("#managers-container").html("");
-            $("#first-screen").removeClass("d-none");
-            $("#managers-container").addClass("d-none");
-            $("#no-results-screen").addClass("d-none");
+                let name = $("#search-managers-frm").find("[name=name]").val();
+                let email = $("#search-managers-frm").find("[name=email]").val();
 
-            let name = $("#search-managers-frm").find("[name=name]").val();
-            let email = $("#search-managers-frm").find("[name=email]").val();
+                if (String(name).length < 1 && String(email) < 1) {
+                    return;
+                }
 
-            if (String(name).length < 1 && String(email) < 1) {
-                return;
-            }
+                $.get(
+                    "{{ route('branches-management.search-managers') }}", {
+                        name: $("#search-managers-frm").find("[name=name]").val(),
+                        email: $("#search-managers-frm").find("[name=email]").val()
+                    },
+                    function(data, status) {
 
-            $.get(
-                "{{ route('branches-management.search-managers') }}", {
-                    name: $("#search-managers-frm").find("[name=name]").val(),
-                    email: $("#search-managers-frm").find("[name=email]").val()
-                },
-                function(data, status) {
-
-                    for (let manager of data) {
-                        let template = `
+                        for (let manager of data) {
+                            let template = `
                             <div class="row mb-2 py-2 border rounded align-items-center">
                                 <div class="col-12 col-md-5 pe-2">
                                     <p class="m-0">${manager.first_name} ${manager.last_name}</p>
@@ -300,23 +306,22 @@
                                 </div>
                             </div>`;
 
-                        $("#managers-container").append(template);
-                    }
+                            $("#managers-container").append(template);
+                        }
 
-                    if (data.length > 0) {
-                        $("#first-screen").addClass("d-none");
-                        $("#no-results-screen").addClass("d-none");
-                        $("#managers-container").removeClass("d-none");
-                    } else {
-                        $("#first-screen").addClass("d-none");
-                        $("#managers-container").addClass("d-none");
-                        $("#no-results-screen").removeClass("d-none");
-                    }
-                });
-        });
-
-    </script>
-@endpush
+                        if (data.length > 0) {
+                            $("#first-screen").addClass("d-none");
+                            $("#no-results-screen").addClass("d-none");
+                            $("#managers-container").removeClass("d-none");
+                        } else {
+                            $("#first-screen").addClass("d-none");
+                            $("#managers-container").addClass("d-none");
+                            $("#no-results-screen").removeClass("d-none");
+                        }
+                    });
+            });
+        </script>
+    @endpush
 @endsection
 
 @push('foot')

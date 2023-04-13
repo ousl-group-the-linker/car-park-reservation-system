@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Booking;
 use App\Models\Branch;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,7 +19,7 @@ class BookingFactory extends Factory
     {
 
         return [
-            "client_id" => $this->faker->numberBetween(1, 10),
+            "client_id" => User::all()->random()->id,
             "branch_id" => Branch::all()->random()->id,
             // "estimated_start_time" => $startTime,
             // "estimated_end_time",

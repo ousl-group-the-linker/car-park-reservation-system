@@ -16,8 +16,11 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+            $table->string("reference_id")->nullable()->index();
             $table->unsignedBigInteger("client_id");
             $table->unsignedBigInteger("branch_id");
+
+            $table->string("vehicle_no");
 
             $table->dateTime("estimated_start_time");
             $table->dateTime("estimated_end_time");
@@ -28,6 +31,7 @@ class CreateBookingsTable extends Migration
             $table->double("hourly_rate", null, 2);
 
             $table->integer("status")->default(Booking::STATUS_PENDING);
+
             $table->timestamps();
         });
     }

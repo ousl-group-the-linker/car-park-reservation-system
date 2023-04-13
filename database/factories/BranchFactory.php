@@ -24,6 +24,7 @@ class BranchFactory extends Factory
             'address_city_id' => SriLankaCity::all()->random()->id,
             'contact_number' => "0" . $this->faker->randomNumber(2) . $this->faker->randomNumber(7),
             "parking_slots" => $this->faker->numberBetween(10, 20),
+            'hourly_rate' => $this->faker->numberBetween(5, 25),
             // "manager_id" => User::where("role", User::$ROLE_MANAGER)->get()->random()->id
         ];
     }

@@ -77,4 +77,30 @@ $value in $theme-colors {
     background-image: linear-gradient(to bottom, rgba($main-color, 0.1), white);
 }
 
+.text-truncate-container {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    &.max-lines-1 {
+        -webkit-line-clamp: 1;
+        height: calc(1.2 * 1rem);
+    }
+
+    &.max-lines-2 {
+        -webkit-line-clamp: 2;
+        height: calc(1.2em * 2);
+    }
+
+    &.max-lines-3 {
+        -webkit-line-clamp: 3;
+        height: 3rem;
+    }
+
+    &.max-lines-4 {
+        -webkit-line-clamp: 4;
+        height: 4rem;
+    }
+}
+
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";

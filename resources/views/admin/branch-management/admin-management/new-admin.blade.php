@@ -1,15 +1,8 @@
 @extends('layouts.side-bar')
+@include('common.side-bar.side-bar')
+
 @section('sidebar-body')
-    @if (Auth::user()->isSuperAdminAccount())
-        @include('menues.sidebar-body-super-admin')
-        @yield('sidebar-body-super-admin')
-    @elseif(Auth::user()->isManagerAccount())
-        @include('menues.sidebar-body-admin')
-        @yield('sidebar-body-admin')
-    @elseif(Auth::user()->isCounterAccount())
-        @include('menues.sidebar-body-user')
-        @yield('sidebar-body-user')
-    @endif
+    @yield('common-side-bar')
 @endsection
 
 @section('main-header')

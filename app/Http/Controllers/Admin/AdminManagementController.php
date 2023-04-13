@@ -17,7 +17,6 @@ class AdminManagementController extends Controller
 {
     public function index(Request $request)
     {
-        $this->authorize("viewAny", User::class);
 
         $data = (object)$request->validate([
             "email" => "nullable|email"
