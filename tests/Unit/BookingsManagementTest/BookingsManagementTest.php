@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Booking;
 
-class BokkingsManagementTest extends TestCase
+class BookingsManagementTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
