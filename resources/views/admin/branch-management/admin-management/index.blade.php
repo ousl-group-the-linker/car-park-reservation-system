@@ -30,6 +30,12 @@
 
 @section('main-body')
     <div class="container">
+        <div class="row mb-4 p-0 m-0">
+            <div class="col-12 d-flex p-0 m-0" style="max-width: 780px">
+                <a href="{{ route('branches-management.admin-management.new', ['branch' => $branch->id]) }}" class="btn btn-primary">
+                    <i class="bi bi-plus-square me-1"></i>New Admin</a>
+            </div>
+        </div>
         <div class="p-0" style="max-width: 780px">
             <div class="card">
                 <div class="card-header">
