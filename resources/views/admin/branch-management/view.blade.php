@@ -86,12 +86,12 @@
                 <div class="card-body">
                     <span class="d-block mb-2">{{ $branch->reservedSlots()->count() }} of {{ $branch->parking_slots }}
                         Booked
-                        ({{ (int)(($branch->reservedSlots()->count() / $branch->parking_slots) * 100) }}%)</span>
+                        ({{ $persentage = (int)(($branch->reservedSlots()->count() / $branch->parking_slots) * 100) }}%)</span>
                     <div class="progress">
                         <div class="progress-bar" role="progressbar"
                             aria-valuenow="{{ $branch->reservedSlots()->count() }}" aria-valuemin="0"
                             aria-valuemax="{{ $branch->parking_slots }}"
-                            style="width: {{ $branch->reservedSlots()->count() }}%"></div>
+                            style="width: {{ $persentage }}%"></div>
                     </div>
                 </div>
             </div>

@@ -29,6 +29,8 @@ class ResetAccountPassword extends Mailable implements ShouldQueue
         $this->email = $email;
         $this->token = $token;
         $this->initiatedDateTime = $createdAt;
+
+        $this->subject("Forgot Password - " . config("app.name"));
     }
 
     public function via($notifiable)

@@ -65,7 +65,7 @@
                                     class="text-dark text-decoration-none">{{ $booking->Client->contact_number }}</a>
                             </div>
                             <div class="col-6">
-                                <span>Contacts</span>
+                                <span>Address</span>
                                 <p>{{ $booking->Client->AddressText }}</p>
                             </div>
                         </div>
