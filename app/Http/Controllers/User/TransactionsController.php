@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\PayherePayment;
 use App\Models\SriLankaCity;
 use App\Models\SriLankaDistrict;
 use App\Models\Transaction;

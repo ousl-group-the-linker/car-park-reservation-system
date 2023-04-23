@@ -4,16 +4,15 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\BookingTransaction;
 use App\Models\Branch;
-use App\Models\SriLankaDistrict;
 use App\Models\Transaction;
-use App\Models\User;
+use App\Services\SmsDispatcherService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class BookingsController extends Controller
@@ -135,25 +134,37 @@ class BookingsController extends Controller
         $startDateTime = Carbon::createFromFormat("Y-m-d H:i",  "{$data->arrivel_date} {$data->arrivel_time}");
         $releaseDateTime = Carbon::createFromFormat("Y-m-d H:i",  "{$data->release_date} {$data->release_time}");
 
-        $booking = Booking::create([
-            "vehicle_no" => $data->vehicle_no,
-            "client_id" => Auth::user()->id,
-            "branch_id" => $branch->id,
-            "estimated_start_time" => $startDateTime->format("Y-m-d H:i"),
-            "estimated_end_time" => $releaseDateTime->format("Y-m-d H:i"),
-            "status" => Booking::STATUS_PENDING,
-            "hourly_rate" => $branch->hourly_rate
-        ]);
 
-        $booking->Transactions()->create([
-            "client_id" => Auth::user()->id,
-            'amount' => -$branch->hourly_rate * ($releaseDateTime->diffInHours($startDateTime)),
-            'status' => Transaction::$STATUS_PENDING,
-            'intent' => Transaction::$INTENT_BOOKING,
-        ]);
+        try {
+            $booking = Booking::create([
+                "vehicle_no" => $data->vehicle_no,
+                "client_id" => Auth::user()->id,
+                "branch_id" => $branch->id,
+                "estimated_start_time" => $startDateTime->format("Y-m-d H:i"),
+                "estimated_end_time" => $releaseDateTime->format("Y-m-d H:i"),
+                "status" => Booking::STATUS_PENDING,
+                "hourly_rate" => $branch->hourly_rate
+            ]);
 
-        return redirect()->route("my-bookings.view", ["booking" => $booking->reference_id])
-            ->with(["message" => "The booking has been successfully made."]);
+
+            $booking->Transactions()->create([
+                "client_id" => Auth::user()->id,
+                'amount' => -$branch->hourly_rate * ($releaseDateTime->diffInHours($startDateTime)),
+                'status' => Transaction::$STATUS_PENDING,
+                'intent' => Transaction::$INTENT_BOOKING,
+            ]);
+
+            $message = "You have successfully placed a parking reservation at {$branch->name}.\n";
+            $message .= "Reservation starts at {$startDateTime->format("Y-m-d H:i")}\n";
+            $message .= "Reference No: {$booking->reference_id}";
+            (new SmsDispatcherService())->send(Auth::user()->contact_number, $message);
+
+            return redirect()->route("my-bookings.view", ["booking" => $booking->reference_id])
+                ->with(["message" => "The booking has been successfully made."]);
+        } catch (Exception $e) {
+            Log::error("Failed to place the booking ({$e->getMessage()}).", $e->getTrace());
+            abort(500);
+        }
     }
 
     public function view(Booking $booking, Request $request)

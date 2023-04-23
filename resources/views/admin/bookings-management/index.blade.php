@@ -130,7 +130,7 @@
                                             <div
                                                 class="col-6 col-xl-2 mb-2 mb-xl-0 p-0 d-flex flex-column align-items-start">
                                                 <span class="fs-6 fw-light text-dark text-dark">ID</span>
-                                                <p class="m-0 text-dark mt-1">#{{ $booking->reference_id }}</p>
+                                                <p class="m-0 text-dark mt-1">{{ $booking->reference_id }}</p>
                                             </div>
 
                                             <div

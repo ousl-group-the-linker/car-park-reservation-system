@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Branch;
 use App\Models\Transaction;
+use App\Services\SmsDispatcherService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BookingsManagementController extends Controller
 {
@@ -21,7 +23,7 @@ class BookingsManagementController extends Controller
     {
 
         $data = (object)$request->validate([
-            "booking_reference_id" => "nullable|string",
+            "booking_id" => "nullable|string",
             "branch" => "nullable|string",
             "email" => "nullable|string",
             "status" => "nullable|string",
@@ -42,8 +44,8 @@ class BookingsManagementController extends Controller
                 $query->where("email", trim($data->email));
             });
         }
-        if (($data->booking_reference_id ?? NULL) != null) {
-            $bookings->where("reference_id", "=", $data->booking_reference_id);
+        if (($data->booking_id ?? NULL) != null) {
+            $bookings->where("reference_id", "=", $data->booking_id);
         }
 
         if (Auth::user()->isManagerAccount()) {
@@ -106,13 +108,27 @@ class BookingsManagementController extends Controller
     {
         $this->authorize("markAsOnGoing", $booking);
 
-        $booking->status = Booking::STATUS_ONGOING;
-        $booking->real_start_time = Carbon::now();
-        $booking->save();
+        try {
+            DB::beginTransaction();
+            $booking->status = Booking::STATUS_ONGOING;
+            $booking->real_start_time = Carbon::now();
+            $booking->save();
 
+            $branch = $booking->Branch;
+            $user = $booking->Client;
 
-        return redirect()->route("bookings-management.view", ["booking" => $booking->reference_id])
-            ->with(["message" => "The booking is successfully started."]);
+            $message = "Your vehicle parking reservation (Reference No: {$booking->reference_id}) is started now at {$branch->name}.";
+            (new SmsDispatcherService())->send($user->contact_number, $message);
+
+            DB::commit();
+
+            return redirect()->route("bookings-management.view", ["booking" => $booking->reference_id])
+                ->with(["message" => "The booking is successfully started."]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage(), $e->getTrace());
+            abort(500, "Something was wrong, please try again.");
+        }
     }
 
 
@@ -123,16 +139,30 @@ class BookingsManagementController extends Controller
     {
         $this->authorize("markAsCancelled", $booking);
 
-        $booking->status = Booking::STATUS_CANCELLED;
-        $booking->save();
+        try {
+            DB::beginTransaction();
+            $booking->status = Booking::STATUS_CANCELLED;
+            $booking->save();
 
-        //refund allocated amount
-        $booking->Transactions()->update([
-            "status" => Transaction::$STATUS_REFUNDED,
-        ]);
+            //refund allocated amount
+            $booking->Transactions()->update([
+                "status" => Transaction::$STATUS_REFUNDED,
+            ]);
+            $user = $booking->Client;
+            $branch = $booking->Branch;
+            $message = "Your vehicle parking reservation (Reference No: {$booking->reference_id}) is cancelled at {$branch->name}.";
 
-        return redirect()->route("bookings-management.view", ["booking" => $booking->reference_id])
-            ->with(["message" => "The booking is successfully cancelled."]);
+            (new SmsDispatcherService())->send($user->contact_number, $message);
+
+            DB::commit();
+
+            return redirect()->route("bookings-management.view", ["booking" => $booking->reference_id])
+                ->with(["message" => "The booking is successfully cancelled."]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage(), $e->getTrace());
+            abort(500, "Something was wrong, please try again.");
+        }
     }
 
     /**
@@ -173,6 +203,11 @@ class BookingsManagementController extends Controller
                     'intent' => Transaction::$INTENT_BOOKING,
                 ]);
             }
+            $user = $booking->Client;
+            $branch = $booking->Branch;
+            $message = "Your vehicle parking reservation (Reference No: {$booking->reference_id}) is finished at {$branch->name}.";
+
+            (new SmsDispatcherService())->send($user->contact_number, $message);
 
             DB::commit();
 
